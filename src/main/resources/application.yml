@@ -33,7 +33,7 @@ spring:
     #useGlobalDataSourceStat=true
   jpa:
     database: MYSQL
-    show-sql: false
+    show-sql: true
   #Hibernate ddl auto (validate|create|create-drop|update)
     hibernate:
       ddl-auto: update
@@ -41,7 +41,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
-        format_sql: false
+        format_sql: true
 jwt:
   header: Authorization
   secret: mySecret

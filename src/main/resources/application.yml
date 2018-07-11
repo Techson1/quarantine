@@ -3,7 +3,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
     #url: jdbc:mysql://192.168.2.2:3306/aoqun?characterEncoding=utf8
-    url: jdbc:mysql://127.0.0.1:3306/aoqun?characterEncoding=utf8
+    url: jdbc:mysql://127.0.0.1:3306/aoqun?characterEncoding=utf8&useSSL=false
     #url: jdbc:mysql://127.0.0.1:3306/aoquntest?characterEncoding=utf8
     #url: jdbc:mysql://172.16.11.52:3306/aoquntest?characterEncoding=utf8
     username: root
@@ -41,7 +41,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
-        format_sql: true
+        format_sql: false
 jwt:
   header: Authorization
   secret: mySecret

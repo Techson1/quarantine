@@ -711,7 +711,7 @@ public class BaseInfoController extends BaseController<BaseInfo,BaseInfoService>
 	}
 	
 	/**
-	 * 羊只复合接口校验
+	 * 羊只复合接口校验 1
 	 * */
 	@RequestMapping(value="appOrgVerify")
 	public Message appOrgVerify(String earTag,Long orgId,String type){
@@ -723,14 +723,14 @@ public class BaseInfoController extends BaseController<BaseInfo,BaseInfoService>
 	}
 	
 	/**
-	 * app羊只复合校验
+	 * app羊只复合校验，2 出库复合校验
 	 * @param code 耳号
 	 * @param type 出库类型
 	 * */
 	@RequestMapping(value="appAuditVerify")
 	public Message appAuditVerify(String code,String type){
 		Long physiologyStatus = MyUtils.strToLong(SystemM.type(type));
-		BaseInfo base = baseInfoService.getRepository().findByAppAudit(code,physiologyStatus);
+		BaseInfo base = baseInfoService.getRepository().findByAppAudit(code,code,physiologyStatus);
 		if (base==null){
 			return GlobalConfig.setAbnormal("该羊出库类型有误");
 		}
@@ -741,7 +741,7 @@ public class BaseInfoController extends BaseController<BaseInfo,BaseInfoService>
 	}
 	
 	/**
-	 * app羊只复合
+	 * app羊只复合，3 出库复合接口
 	 * @param id 羊只id
 	 * @param type 出库类型
 	 * @param reviewing 复合人

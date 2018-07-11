@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ import com.beiqisoft.aoqun.base.BaseController;
 @RestController
 @RequestMapping(value = "pvg")
 public class PvgController extends BaseController<Pvg, UserService> {
-
+	Logger log=Logger.getLogger(PvgController.class);
 	@Autowired
 	PvgRepository pvgRepository;
 	
@@ -75,6 +76,7 @@ public class PvgController extends BaseController<Pvg, UserService> {
 	
 	@RequestMapping(value = "list")
 	public Object list(){
+		log.info("获取菜单......start");
 		if(debugFlag || currentUser().getUserName().equals("admin")){
 			String[] pvgs= new String[]{"繁殖参数","集团信息","分场管理","羊只品种设置","羊只销售定价","胚胎销销售定价"
 					,"疾病及淘汰原因","育种淘汰原因","死亡原因","公羊缺陷","母羊缺陷","账号管理","角色管理","供应商维护"
@@ -85,6 +87,7 @@ public class PvgController extends BaseController<Pvg, UserService> {
 			result.put("allPvgs", pvgRepository.findByType(Pvg.TYPE_PARENT));
 			result.put("selfPvgs", currentUser().getRole().getPvgIds());
 		}
+		log.info("获取菜单......end");
 		return result;
 	}
 	

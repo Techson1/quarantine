@@ -13,12 +13,16 @@ import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.config.SystemM;
 import com.beiqisoft.aoqun.entity.Customer;
 import com.beiqisoft.aoqun.entity.Sales;
+import com.beiqisoft.aoqun.entity.SalesDatail;
 import com.beiqisoft.aoqun.entity.rep.SalesRep;
 import com.beiqisoft.aoqun.service.SalesService;
 import com.beiqisoft.aoqun.util.DateUtils;
 import com.beiqisoft.aoqun.util.json.JSON;
+
+import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(value = "sales")
+@Slf4j
 public class SalesController extends BaseController<Sales,SalesService> {
 	@RequestMapping(value ="list")
     public Page<Sales> list(Sales sales) throws InterruptedException{
@@ -53,7 +57,44 @@ public class SalesController extends BaseController<Sales,SalesService> {
 		salesDatailService.audit(id,SystemM.AUDIT_MARKET);
 		return SUCCESS;
 	}
-	
+	/**json
+	 *   羊只复核
+	 * @param id 销售单ID
+	 * @param sheepids  复核羊只id
+	 * @param reviewing 复核人
+	 * @return
+	 */
+	@RequestMapping(value="checkReviewSheep/{id}/{reviewing}/{sheepids}")
+	public Message checkReviewSheep(@PathVariable Long id,@PathVariable String reviewing,@PathVariable String sheepids) {
+		log.info("start checkReviewSheep...");
+		Sales sales=salesService.getRepository().findOne(id);
+		log.debug("checkReviewSheep totalcount："+sales.getTotalCount());
+		String ids[]=sheepids.split(",");
+		if(ids.length==Integer.valueOf(sales.getTotalCount())) {//如果全部复核，则更新销售单状态
+			log.debug("start change status...");
+			List<SalesDatail> datails=salesDatailService.getRepository().findBySales_id(id);//获得销售单下所有详情
+			for(SalesDatail d:datails) {
+				d.setCheckStatus("1");//设置为选中状态
+				salesDatailService.getRepository().save(d);
+			}
+			//设置为已经复核
+			salesService.getRepository().save(sales.setAudit(new Date(), reviewing));
+		}else {//只是记录选中状态
+			log.debug("no pass change status");
+			List<SalesDatail> datails=salesDatailService.getRepository().findBySales_id(id);//获得销售单下所有详情
+			for(SalesDatail d:datails) {
+				d.setCheckStatus("0");//设置为不选中状态
+				salesDatailService.getRepository().save(d);
+			}
+			for(String sheepid:ids) {//把当前选中的设置为选中状态
+				SalesDatail datail=salesDatailService.getRepository().findOne(Long.valueOf(sheepid));
+				datail.setCheckStatus("1");//设置选中
+				salesDatailService.getRepository().save(datail);
+			}
+		}
+		log.info("end checkReviewSheep.....");
+		return SUCCESS;
+	}
 	/**
 	 * 取消复合
 	 * */

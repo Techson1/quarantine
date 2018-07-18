@@ -1,5 +1,6 @@
 package com.beiqisoft.aoqun.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,6 +36,9 @@ public class SalesDatail extends BaseEntity{
 	private String weight;
 	/**计划价格*/
 	private String planPrice;
+	/******是否选中********/
+	@Column(name="check_status")
+	private String checkStatus;
 	
 	/**耳号*/
 	@Transient

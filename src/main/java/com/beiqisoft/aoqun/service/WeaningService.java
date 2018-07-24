@@ -1,6 +1,7 @@
 package com.beiqisoft.aoqun.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 
@@ -8,6 +9,7 @@ import com.beiqisoft.aoqun.base.BaseService;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.Weaning;
 import com.beiqisoft.aoqun.repository.WeaningRepository;
+import com.beiqisoft.aoqun.vo.WeaningVo;
 
 public interface WeaningService extends BaseService<Weaning, WeaningRepository>{
 	/**
@@ -16,6 +18,8 @@ public interface WeaningService extends BaseService<Weaning, WeaningRepository>{
 	 * @return
 	 */
 	Page<Weaning> find(Weaning weaning);
+	
+	Page<WeaningVo> findPageWeaning(final Weaning weaning);
 	
 	Page<Weaning> find(Weaning weaning, int pageNum);
 

@@ -31,7 +31,7 @@ import lombok.ToString;
  */
 @Getter @Setter @NoArgsConstructor @ToString @AllArgsConstructor
 @Entity 
-@Table(name = "t_lambingDam")
+@Table(name = "t_lambing_dam")
 public class LambingDam extends BaseEntity{
 	/**母羊*/
 	@ManyToOne @JoinColumn(name = "dam_id")

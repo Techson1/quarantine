@@ -16,6 +16,7 @@ import com.beiqisoft.aoqun.entity.Breed;
 import com.beiqisoft.aoqun.entity.Weaning;
 import com.beiqisoft.aoqun.service.WeaningService;
 import com.beiqisoft.aoqun.util.json.JSON;
+import com.beiqisoft.aoqun.vo.WeaningVo;
 
 /**
  * 断奶访问控制类
@@ -30,9 +31,14 @@ public class WeaningController extends BaseController<Weaning,WeaningService> {
 	@JSON(type=Breed.class,include="breedName")
 	@RequestMapping(value ="list")
     public Page<Weaning> list(Weaning weaning) throws InterruptedException{
+		
 		return weaningService.find(weaning);
     }
-	
+	@RequestMapping(value ="listAll")
+    public Page<WeaningVo> listAll(Weaning weaning) throws InterruptedException{
+		
+		return weaningService.findPageWeaning(weaning);
+    }
 	/**
 	 * 断奶校验
 	 * */

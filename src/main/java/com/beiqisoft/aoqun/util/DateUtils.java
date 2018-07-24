@@ -174,4 +174,15 @@ public class DateUtils {
 	    int maxDate = a.get(Calendar.DATE);  
 	    return maxDate;  
 	} 
+	/**
+	 * 格式日期
+	 * @param date
+	 * @param parentStr
+	 * @return
+	 */
+	public static String getStrDate(Date date,String parentStr) {
+		 SimpleDateFormat format = new SimpleDateFormat(parentStr);
+		 
+		 return format.format(date);
+	}
 }

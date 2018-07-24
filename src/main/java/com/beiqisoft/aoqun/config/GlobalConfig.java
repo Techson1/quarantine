@@ -4,7 +4,7 @@ public class GlobalConfig {
 	public static String LOGIN_SESSION_KEY = "springboot_user";
 	public static String DEFAULT_LOGO="img/logo.jpg";
 	/**分页数据*/
-	public static int PAGE_SIZE= 50;
+	public static int PAGE_SIZE= 10;
 	public static int PAGE_MAX_SIZE=150;
 	
 	public static final int NORMAL = 100;//状态正常	

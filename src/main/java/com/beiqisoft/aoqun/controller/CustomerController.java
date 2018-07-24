@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.beiqisoft.aoqun.base.BaseController;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.Customer;
+import com.beiqisoft.aoqun.entity.Organization;
 import com.beiqisoft.aoqun.service.CustomerService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 客户访问控制类
@@ -20,6 +23,7 @@ import com.beiqisoft.aoqun.service.CustomerService;
  */
 @RestController
 @RequestMapping(value = "customer")
+@Slf4j
 public class CustomerController extends BaseController<Customer,CustomerService> {
 	@RequestMapping(value ="list")
     public Page<Customer> list(Customer customer) throws InterruptedException{
@@ -39,7 +43,24 @@ public class CustomerController extends BaseController<Customer,CustomerService>
 			return false;
 		return true;
     }
-	
+	/**
+	 * json
+	 * @param orgId 组织机构代码
+	 * @param customer
+	 * @return
+	 */
+	@RequestMapping(value ="save/{orgId}")
+	public Message saveAndOrg(@PathVariable Long orgId,Customer customer) {
+		log.info("saveAndOrg orgId..."+orgId);
+		log.info("start..."+customer);
+		Organization org=new Organization();
+		org.setId(orgId);
+		customer.setOrg(org);
+		
+		customerService.getRepository().save(customer);
+		log.info("end..."+customer);
+		return SUCCESS;
+	}
 	/**
 	 * 客户名称可用修改
 	 * @param firstName

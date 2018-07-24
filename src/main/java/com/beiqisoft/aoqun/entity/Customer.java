@@ -1,6 +1,8 @@
 package com.beiqisoft.aoqun.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -68,8 +70,8 @@ public class Customer extends BaseEntity{
 	/**简称*/
 	@Size(max=64)
 	private String brief;
-	/*@ManyToOne @JoinColumn(name = "org_id")
-	private Organization org;*/
+	@ManyToOne @JoinColumn(name = "org_id")
+	private Organization org;
 	/**购买次数*/
 	@Transient
 	private String purchase;

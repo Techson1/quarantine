@@ -1,16 +1,23 @@
 package com.beiqisoft.aoqun.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -33,6 +40,7 @@ import com.beiqisoft.aoqun.service.PaddockChangeService;
 import com.beiqisoft.aoqun.service.ParityService;
 import com.beiqisoft.aoqun.service.WeaningService;
 import com.beiqisoft.aoqun.util.DateUtils;
+import com.beiqisoft.aoqun.vo.WeaningVo;
 
 @Service
 public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository> implements WeaningService{
@@ -52,18 +60,87 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 	@Autowired
 	public PaddockChangeService paddockChangeService;
 
-	
+	/**
+     * 实体管理对象
+     */
+    @PersistenceContext
+    EntityManager entityManager;
+
 	public Page<Weaning> find(final Weaning weaning) {
 		return weaningRepository.findAll(new Specification<Weaning>() {
 			public Predicate toPredicate(Root<Weaning> root, CriteriaQuery<?> query,
 					CriteriaBuilder criteriaBuilder) {
-				List<Predicate> list = getEntityPredicate(weaning,root,criteriaBuilder);
-				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				List<Predicate> predicates = new ArrayList<>(); //所有的断言
+				//List<Predicate> list = getEntityPredicate(weaning,root,criteriaBuilder);
+				if(StringUtils.isNotBlank(weaning.getDam().getCode())) {//如果耳号不为空
+					 Predicate code = criteriaBuilder.equal(root.get("dam").get("code").as(String.class), weaning.getDam().getCode());
+	                 predicates.add(code);
+				}
+				query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
 				return query.getRestriction();
 			}
 		},new PageRequest(weaning.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"));
 	}
 	
+	public Page<WeaningVo> findPageWeaning(final Weaning weaning){
+		 
+		StringBuilder qlString=new StringBuilder();
+		qlString.append("select  info.code,bree.breed_name as breedName,par.parity_max_number as parityMaxNumber,lad.born_date as bornDate,lad.born_times as bornTimes,t.weaning_date as weaningDate,t.recorder,t.ctime from aoquntest.t_weaning t ,\r\n" + 
+				" aoquntest.t_base_info info,aoquntest.t_breed bree,aoquntest.t_parity par,aoquntest.t_lambing_dam lad \r\n" + 
+				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id\r\n" + 
+				" and t.parity_id=par.id ");
+		StringBuilder countTotalBuffer=new StringBuilder();
+		countTotalBuffer.append("select  count(1) from aoquntest.t_weaning t ," + 
+				" aoquntest.t_base_info info,aoquntest.t_breed bree,aoquntest.t_parity par,aoquntest.t_lambing_dam lad " + 
+				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id" + 
+				" and t.parity_id=par.id");
+		
+		if(null!=weaning.getOrg().getId()) {
+			qlString.append(" and t.org_id=").append(weaning.getOrg().getId());
+			countTotalBuffer.append(" and t.org_id=").append(weaning.getOrg().getId());
+		}
+		if(StringUtils.isNotBlank(weaning.getDam().getCode())) {
+			countTotalBuffer.append(" and info.code=").append("'").append(weaning.getDam().getCode()).append("'");
+			qlString.append(" and info.code=").append("'").append(weaning.getDam().getCode()).append("'");
+			
+		}
+		if(null!=weaning.getWeaningDateAssistStart()) {
+			countTotalBuffer.append(" and t.weaning_date >= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistStart(), "yyyy-MM-dd")).append("'");
+			qlString.append(" and t.weaning_date >= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistStart(), "yyyy-MM-dd")).append("'");
+		}
+		if(null!=weaning.getWeaningDateAssistEnd()) {
+			countTotalBuffer.append(" and t.weaning_date <= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistEnd(), "yyyy-MM-dd")).append("'");
+			qlString.append(" and t.weaning_date <= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistEnd(), "yyyy-MM-dd")).append("'");
+		}
+		Query countQuery = this.entityManager.createNativeQuery(qlString.toString());
+		Query countQueryCount=  entityManager.createNativeQuery(countTotalBuffer.toString());
+		Long total=Long.valueOf(countQueryCount.getSingleResult().toString());
+
+		countQuery.setFirstResult(weaning.getPageNum()*10);
+		countQuery.setMaxResults(10);
+		List<Object[]> list=countQuery.getResultList();
+		
+         Page<WeaningVo> incomeDailyPage = new PageImpl<WeaningVo>(getBean(list),new PageRequest(weaning.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"),total);
+     
+		return incomeDailyPage; 
+	}
+	
+	public List<WeaningVo> getBean(List<Object[]> list) {
+		 List<WeaningVo> listVo=new ArrayList<WeaningVo>();
+		 for(int i=0;i<list.size();i++) {
+			 WeaningVo vo=new WeaningVo();
+			 vo.setCode(String.valueOf(list.get(i)[0]));
+			 vo.setBreedName(String.valueOf(list.get(i)[1]));
+			 vo.setParityMaxNumber(String.valueOf(list.get(i)[2]));
+			 vo.setBornDate(String.valueOf(list.get(i)[3]));
+			 vo.setBornTimes(String.valueOf(list.get(i)[4]));
+			 vo.setWeaningDate(String.valueOf(list.get(i)[5]));
+			 vo.setRecorder(String.valueOf(list.get(i)[6]));
+			 vo.setCtime(String.valueOf(list.get(i)[07]));
+			 listVo.add(vo);
+		 }
+		return listVo;
+	}
 	public Page<Weaning> find(Weaning weaning, int size) {
 		return weaningRepository.findAll(new Specification<Weaning>() {
 			public Predicate toPredicate(Root<Weaning> root, CriteriaQuery<?> query,
@@ -226,4 +303,5 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 		parityRepository.save(nowParity);
 		return GlobalConfig.SUCCESS;
 	}
+
 }

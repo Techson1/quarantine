@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter @Setter
 public class WeaningVo {
 
+	private Long id; 
 	//耳号
 	private String code;
 	//品种

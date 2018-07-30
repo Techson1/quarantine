@@ -185,4 +185,21 @@ public class DateUtils {
 		 
 		 return format.format(date);
 	}
+	/**
+	 * 将时间戳字符串转化为格式化时间
+	 * @param secondes 时间戳字符串
+	 * @param format 时间格式
+	 * @return 格式化时间
+	 */
+	public static String timeStamp2Date(String secondes,String format){
+		if(secondes==null||secondes.isEmpty()||secondes.equals("null")){
+			return "";
+		}
+		if(format==null||format.isEmpty()){
+			format = "yyyy-MM-dd HH:mm:ss";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(new Date(Long.valueOf(secondes+"000")));
+	}
+	
 }

@@ -29,7 +29,10 @@ public class CustomerController extends BaseController<Customer,CustomerService>
     public Page<Customer> list(Customer customer) throws InterruptedException{
 		return customerService.find(customer);
     }
-	
+	@RequestMapping(value ="selectAll")
+    public List<Customer> selectAll(Long orgId) throws InterruptedException{
+		return customerService.getRepository().findByOrgId(orgId);
+    }
 	/**
 	 * 客户名称校验
 	 * @param firstName
@@ -61,6 +64,14 @@ public class CustomerController extends BaseController<Customer,CustomerService>
 		log.info("end..."+customer);
 		return SUCCESS;
 	}
+	@RequestMapping(value ="list/{orgId}")
+	public List<Customer>  getList(@PathVariable Long orgId) {
+		log.info("list orgId..."+orgId);
+		  
+		List<Customer> result=customerService.findByOrgid(orgId);
+		log.info("end..."+result);
+		return result;
+	}
 	/**
 	 * 客户名称可用修改
 	 * @param firstName
@@ -86,5 +97,14 @@ public class CustomerController extends BaseController<Customer,CustomerService>
 	@RequestMapping(value="findByFirstNameLike")
 	public List<Customer> findByFirstNameLike(String firstName){
 		return customerService.getRepository().findByFirstNameLike("%"+firstName+"%");
+		//return customerService.getRepository().findByFirstNameLike("%"+firstName+"%");
+	}
+	/**
+	 * 模糊查询名称,增加场区区分
+	 * */
+	@RequestMapping(value="findByFirstNameLikeAndOrgId")
+	public List<Customer> findByFirstNameLikeAndOrgId(String firstName,Long orgid){
+		return customerService.findByFirstNameLikeAndOrgId("%"+firstName+"%",orgid);
+		//return customerService.getRepository().findByFirstNameLike("%"+firstName+"%");
 	}
 }

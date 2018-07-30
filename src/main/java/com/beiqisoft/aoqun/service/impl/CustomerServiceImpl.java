@@ -44,9 +44,26 @@ public class CustomerServiceImpl extends BaseServiceIml<Customer,CustomerReposit
 			}
 		},new PageRequest(0, size, Sort.Direction.DESC, "ctime"));
 	}
-
+   /**
+    * 获取该组织机构下的 客户
+    * @param orgid
+    * @return
+    */
+	public List<Customer> findByOrgid(Long orgid){
+		
+		return customerRepository.findByOrgId(orgid);
+		
+	}
 	public CustomerRepository getRepository() {
 		return customerRepository;
 	}
-
+	/**
+	 * 查询客户
+	 * @param firstName 名称
+	 * @param orgid 场区id
+	 * @return
+	 */
+	public List<Customer> findByFirstNameLikeAndOrgId(String firstName,Long orgid){
+		return customerRepository.findByFirstNameLikeAndOrgId(firstName, orgid);
+	}
 }

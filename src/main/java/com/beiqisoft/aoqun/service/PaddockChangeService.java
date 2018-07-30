@@ -8,6 +8,7 @@ import com.beiqisoft.aoqun.entity.Organization;
 import com.beiqisoft.aoqun.entity.Paddock;
 import com.beiqisoft.aoqun.entity.PaddockChange;
 import com.beiqisoft.aoqun.repository.PaddockChangeRepository;
+import com.beiqisoft.aoqun.vo.PaddockChangeVo;
 
 public interface PaddockChangeService extends BaseService<PaddockChange, PaddockChangeRepository>{
 	/**
@@ -16,7 +17,12 @@ public interface PaddockChangeService extends BaseService<PaddockChange, Paddock
 	 * @return
 	 */
 	Page<PaddockChange> find(PaddockChange paddockChange);
-	
+	/**
+	 * 分页获取用户对象 json
+	 * @param paddockChange 查询条件
+	 * @return
+	 */
+	Page<PaddockChangeVo> findAllTurnList(PaddockChange paddockChange);
 	Page<PaddockChange> find(PaddockChange paddockChange, int pageNum);
 
 	/**

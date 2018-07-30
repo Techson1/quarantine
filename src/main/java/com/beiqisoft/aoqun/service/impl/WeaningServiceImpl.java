@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -85,13 +84,13 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 	public Page<WeaningVo> findPageWeaning(final Weaning weaning){
 		 
 		StringBuilder qlString=new StringBuilder();
-		qlString.append("select  info.code,bree.breed_name as breedName,par.parity_max_number as parityMaxNumber,lad.born_date as bornDate,lad.born_times as bornTimes,t.weaning_date as weaningDate,t.recorder,t.ctime from aoquntest.t_weaning t ,\r\n" + 
-				" aoquntest.t_base_info info,aoquntest.t_breed bree,aoquntest.t_parity par,aoquntest.t_lambing_dam lad \r\n" + 
+		qlString.append("select  info.code,bree.breed_name as breedName,par.parity_max_number as parityMaxNumber,lad.born_date as bornDate,lad.born_times as bornTimes,t.weaning_date as weaningDate,t.recorder,t.ctime,t.id from t_weaning t ,\r\n" + 
+				" t_base_info info,t_breed bree,t_parity par,t_lambing_dam lad \r\n" + 
 				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id\r\n" + 
 				" and t.parity_id=par.id ");
 		StringBuilder countTotalBuffer=new StringBuilder();
 		countTotalBuffer.append("select  count(1) from aoquntest.t_weaning t ," + 
-				" aoquntest.t_base_info info,aoquntest.t_breed bree,aoquntest.t_parity par,aoquntest.t_lambing_dam lad " + 
+				" t_base_info info,t_breed bree,t_parity par,t_lambing_dam lad " + 
 				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id" + 
 				" and t.parity_id=par.id");
 		
@@ -129,6 +128,7 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 		 List<WeaningVo> listVo=new ArrayList<WeaningVo>();
 		 for(int i=0;i<list.size();i++) {
 			 WeaningVo vo=new WeaningVo();
+			 vo.setId(Long.valueOf(list.get(i)[8].toString()));
 			 vo.setCode(String.valueOf(list.get(i)[0]));
 			 vo.setBreedName(String.valueOf(list.get(i)[1]));
 			 vo.setParityMaxNumber(String.valueOf(list.get(i)[2]));
@@ -136,7 +136,7 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 			 vo.setBornTimes(String.valueOf(list.get(i)[4]));
 			 vo.setWeaningDate(String.valueOf(list.get(i)[5]));
 			 vo.setRecorder(String.valueOf(list.get(i)[6]));
-			 vo.setCtime(String.valueOf(list.get(i)[07]));
+			 vo.setCtime(String.valueOf(list.get(i)[7]));
 			 listVo.add(vo);
 		 }
 		return listVo;

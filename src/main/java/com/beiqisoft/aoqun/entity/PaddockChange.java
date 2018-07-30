@@ -1,5 +1,6 @@
 package com.beiqisoft.aoqun.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter @Setter @NoArgsConstructor @ToString @AllArgsConstructor
 @Entity 
 @Table(name = "t_paddockChange")
-public class PaddockChange extends BaseEntity{
+public class PaddockChange extends BaseEntity implements Serializable{
 
 	/**羊只*/
 	@ManyToOne @JoinColumn(name="base_id")
@@ -47,7 +48,7 @@ public class PaddockChange extends BaseEntity{
 	/**查询类型*/
 	@Transient
 	private String type;
-	
+	 
 	public PaddockChange(BaseInfo base,Paddock toPaddock,String recorder, Organization org){
 		this.base=base;
 		this.fromPaddock=base.getPaddock();

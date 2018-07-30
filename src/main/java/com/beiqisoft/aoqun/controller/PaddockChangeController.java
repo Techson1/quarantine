@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +24,13 @@ import com.beiqisoft.aoqun.entity.Paddock;
 import com.beiqisoft.aoqun.entity.PaddockChange;
 import com.beiqisoft.aoqun.service.PaddockChangeService;
 import com.beiqisoft.aoqun.util.json.JSON;
+import com.beiqisoft.aoqun.vo.PaddockChangeVo;
 @RestController
 @RequestMapping(value = "paddockChange")
 public class PaddockChangeController extends BaseController<PaddockChange,PaddockChangeService> {
+
+
+    
 	@JSON(type=BaseInfo.class,include="breed,code,sex")
 	@JSON(type=Breed.class,include="breedName")
 	@JSON(type=Paddock.class,include="name")
@@ -31,7 +39,21 @@ public class PaddockChangeController extends BaseController<PaddockChange,Paddoc
     public Page<PaddockChange> list(PaddockChange paddockChange) throws InterruptedException{
 		return paddockChangeService.find(paddockChange);
     }
-	
+	/**
+	 * 
+	 * @param paddockChange
+	 * @return
+	 */
+	@JSON(type=BaseInfo.class,include="breed,code,sex")
+	@JSON(type=Breed.class,include="breedName")
+	@JSON(type=Paddock.class,include="name")
+	@JSON(type=Organization.class,include="brief")
+	@RequestMapping(value ="findAllTurnList")
+	@Cacheable(value="paddockChangeCache")
+	public Page<PaddockChangeVo> findAllTurnList(PaddockChange paddockChange){
+		
+		return paddockChangeService.findAllTurnList(paddockChange);
+	}
 	@RequestMapping(value="addVerifys")
 	public List<Message> addVerifys(String[] earTags,Long paddockId){
 		//TODO 转栏校验预留接口

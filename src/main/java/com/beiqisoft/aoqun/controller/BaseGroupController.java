@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.beiqisoft.aoqun.base.BaseController;
-import com.beiqisoft.aoqun.config.GlobalConfig;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.BaseGroup;
 import com.beiqisoft.aoqun.entity.BaseGroupDetail;

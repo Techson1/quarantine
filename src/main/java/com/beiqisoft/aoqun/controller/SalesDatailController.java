@@ -21,8 +21,11 @@ import com.beiqisoft.aoqun.entity.domain.PrintBase;
 import com.beiqisoft.aoqun.service.SalesDatailService;
 import com.beiqisoft.aoqun.util.DateUtils;
 import com.beiqisoft.aoqun.util.json.JSON;
+
+import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(value = "salesDatail")
+@Slf4j
 public class SalesDatailController extends BaseController<SalesDatail,SalesDatailService> {
 	@RequestMapping(value ="list")
     public Page<SalesDatail> list(SalesDatail salesDatail) throws InterruptedException{
@@ -57,6 +60,7 @@ public class SalesDatailController extends BaseController<SalesDatail,SalesDatai
 	public Message delete(@PathVariable Long[] ids){
 		return salesDatailService.delete(ids);
 	}
+	
 	
 	/**
 	 * 校验

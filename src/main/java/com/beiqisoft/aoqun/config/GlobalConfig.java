@@ -11,6 +11,7 @@ public class GlobalConfig {
 	public static final int ABNORMAL = 101;//状态异常
 	public static final int IS_PASS=102;//需要判读是否通过
 	public static final int ABNORMAL_TO=103;
+	public static final int ABNORMAL_NULL=104;
 	/**平均月龄*/
 	public static final double AVERAGE_MONTH=30.4375;
 	
@@ -19,6 +20,7 @@ public class GlobalConfig {
 	public static final Message LOGIN_FAIL = new Message(ABNORMAL,"账号或密码错误");
 	public static final Message VCODE_FAIL = new Message(ABNORMAL,"验证码错误");
 	public static final Message UNEXIST_USER = new Message(ABNORMAL,"用户不存在");
+	public static final Message COUNT_NULL= new Message(ABNORMAL_NULL,"该销售单下没有羊只");
 	public static final Message VERSION = new Message(NORMAL,"1.0.0");
 	
 	/**

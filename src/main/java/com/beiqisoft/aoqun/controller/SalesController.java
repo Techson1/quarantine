@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.beiqisoft.aoqun.base.BaseController;
@@ -64,12 +65,22 @@ public class SalesController extends BaseController<Sales,SalesService> {
 	 * @param reviewing 复核人
 	 * @return
 	 */
-	@RequestMapping(value="checkReviewSheep/{id}/{reviewing}/{sheepids}")
-	public Message checkReviewSheep(@PathVariable Long id,@PathVariable String reviewing,@PathVariable String sheepids) {
+	@RequestMapping(value="checkReviewSheep/{id}/{reviewing}")
+	public Message checkReviewSheep(@PathVariable Long id,@PathVariable String reviewing) {
 		log.info("start checkReviewSheep...");
 		Sales sales=salesService.getRepository().findOne(id);
 		log.debug("checkReviewSheep totalcount："+sales.getTotalCount());
-		String ids[]=sheepids.split(",");
+		List<SalesDatail> list=salesDatailService.getRepository().findBySalesIdAndCheckStatus(Long.valueOf(id), "1");
+		if(null==sales.getTotalCount()) {
+			return COUNT_NULL;
+		}
+		if(null!=list&&Integer.valueOf(sales.getTotalCount())==list.size()) {
+			log.info("end checkReviewSheep.....");
+			return SUCCESS;
+		}else {
+			return FAIL;
+		}
+		/*String ids[]=sheepids.split(",");
 		if(ids.length==Integer.valueOf(sales.getTotalCount())) {//如果全部复核，则更新销售单状态
 			log.debug("start change status...");
 			List<SalesDatail> datails=salesDatailService.getRepository().findBySales_id(id);//获得销售单下所有详情
@@ -91,9 +102,23 @@ public class SalesController extends BaseController<Sales,SalesService> {
 				datail.setCheckStatus("1");//设置选中
 				salesDatailService.getRepository().save(datail);
 			}
-		}
-		log.info("end checkReviewSheep.....");
-		return SUCCESS;
+		}*/
+		 
+	}
+	/**
+	 * 复核羊只，只要选中就更改状态
+	 * @param sheepid t_sales_datail 销售详情表ID
+	 * @param ckStatus  选中未1 否则为0
+	 * @return
+	 */
+	@RequestMapping(value="checkOneSheep/{sheepid}/{ckStatus}")
+	public Message checkOneSheep(@PathVariable String sheepid,@PathVariable String ckStatus) {
+		log.info("startcheckOneSheep.....");
+		SalesDatail datail=salesDatailService.getRepository().findOne(Long.valueOf(sheepid));
+		datail.setCheckStatus(ckStatus);//设置选中
+		salesDatailService.getRepository().save(datail);
+		log.info("end checkOneSheep.....");
+  		return SUCCESS;
 	}
 	/**
 	 * 取消复合

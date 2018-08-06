@@ -114,12 +114,19 @@ public class SalesDatailServiceImpl extends BaseServiceIml<SalesDatail,SalesData
 	@Override
 	public Message delete(Long[] ids) {
 		List<BaseInfo> bases= new ArrayList<BaseInfo>();
+		StringBuffer sb=new StringBuffer("");
 		for (Long id:ids){
 			SalesDatail salesDatail=salesDatailRepository.findOne(id);
-			salesDatail.getItem().setPhysiologyStatus(MyUtils.strToLong(SystemM.NORMAL));
-			bases.add(salesDatail.getItem());
-			salesRepository.save(salesDatail.getSales().sub(salesDatail));
-			salesDatailRepository.delete(id);
+			if(null!=salesDatail.getCheckStatus() && salesDatail.getCheckStatus().equals("1")) {//如果确认
+				sb.append(salesDatail.getCode()).append(" ");
+				
+			}else {
+				salesDatail.getItem().setPhysiologyStatus(MyUtils.strToLong(SystemM.NORMAL));
+				bases.add(salesDatail.getItem());
+				salesRepository.save(salesDatail.getSales().sub(salesDatail));
+				salesDatailRepository.delete(id);
+			}
+			
 		}
 		baseInfoService.getRepository().save(bases);
 		return GlobalConfig.SUCCESS;

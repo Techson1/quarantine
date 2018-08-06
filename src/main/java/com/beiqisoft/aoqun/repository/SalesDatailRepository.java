@@ -24,6 +24,13 @@ public interface SalesDatailRepository extends BaseRepository<SalesDatail>{
 	 * 根据销售单号查询羊只
 	 */
 	List<SalesDatail> findBySales_id(Long salesId);
+	/**
+	 * 查询有多少只羊已确认
+	 * @param salesId
+	 * @param check_status 
+	 * @return
+	 */
+	List<SalesDatail> findBySalesIdAndCheckStatus(Long salesId,String check_status);
 
 	@Query("select count(*) from SalesDatail s where s.item.org.id = ?1 And s.item.sex=?2 And s.item.birthDay between ?3 And ?4")
 	Integer findSaleNumByItem_org_idAndItem_SexAndItem_birthDayBetween(Long id, String sex , Date startDate, Date monthOver);

@@ -33,7 +33,7 @@ spring:
     #useGlobalDataSourceStat=true
   jpa:
     database: MYSQL
-    show-sql: true
+    show-sql: false
   #Hibernate ddl auto (validate|create|create-drop|update)
     hibernate:
       ddl-auto: update

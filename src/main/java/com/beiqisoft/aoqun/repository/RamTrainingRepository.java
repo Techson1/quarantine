@@ -18,7 +18,8 @@ public interface RamTrainingRepository extends BaseRepository<RamTraining>{
 	/**
 	 *查询最大时间
 	 * */
-	@Query(value="SELECT new RamTraining(r.assess,MAX(r.date)) FROM RamTraining r WHERE r.ram.id = ?1 ")
+	//@Query(value="SELECT new RamTraining(r.assess,MAX(r.date)) FROM RamTraining r WHERE r.ram.id = ?1 ")
+	@Query(value="select new RamTraining(t.assess,t.date) from RamTraining t where t.date = (select MAX(r.date) from RamTraining r where r.ram.id = ?1) ")
 	RamTraining findByMaxDate(Long id);
 
 	RamTraining findByRam_idAndDate(Long id, Date date);

@@ -175,8 +175,14 @@ public class JoiningController extends BaseController<Joining,JoiningService> {
 	@RequestMapping(value="update")
 	public Message edit(Long id,String sireCode,String sexStatus,String joiningType,Date joiningDate,String recorder,Long paddockId){
 		Joining joining=joiningService.getRepository().findOne(id);
+		
+		BaseInfo dam=joining.getDam();
+		BaseInfo sire=baseInfoService.findByCodeOrRfid(sireCode.trim());
+		//根据父号、母号计算血统,并根据血统查询品种
+		Breed childBreed=breedService.findByComparisonbreedIds(dam.getBreed(),sire.getBreed());
+		
 		joiningService.getRepository().save(joining.setUpdate(baseInfoService
-				.findByCodeOrRfid(sireCode),sexStatus,joiningType,joiningDate,recorder));
+				.findByCodeOrRfid(sireCode),sexStatus,joiningType,joiningDate,recorder,childBreed));
 		if ("1".equals(joining.getJoiningSeq())){
 			Parity parity=joining.getParity();
 			parity.setNonpregnancy(DateUtils.dateSubDate(joining.getJoiningDate(), parity.getStartDate()));

@@ -162,12 +162,14 @@ public class Joining extends BaseEntity{
 	}
 
 	public Joining setUpdate(BaseInfo sire, String sexStatus,
-			String joiningType, Date joiningDate, String recorder) {
+			String joiningType, Date joiningDate, String recorder, Breed childBreed) {
 		this.sire=sire;
 		this.sexStatus=sexStatus;
 		this.joiningType=joiningType;
 		this.joiningDate=joiningDate;
 		this.recorder=recorder;
+		this.childBreed=childBreed;
+		this.setLevel();
 		return this;
 	}
 

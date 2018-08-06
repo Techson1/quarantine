@@ -195,7 +195,7 @@ public class PvgController extends BaseController<Pvg, UserService> {
 		Pvg pb3 = new Pvg("frozenEmbryorEgister/list", "冻胚登记","",pb);
 		Pvg pb4 = new Pvg("#", "冻精登记","",pb);//frozenSemenEgister/list
 		Pvg pc  = new Pvg("#", "销售管理", "fa-asterisk");
-		Pvg pc0 = new Pvg("customer/list", "客户资料","",pc);
+		Pvg pc0 = new Pvg("customer/list", "客户管理","",pc);
 		Pvg pc1 = new Pvg("salesSlip/list", "羊只销售单","",pc);
 		Pvg pc2 = new Pvg("salesInventory/list", "销售库存","",pc);
 		Pvg pc3 = new Pvg("sold/list", "已售查询","",pc);

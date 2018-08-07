@@ -25,6 +25,11 @@ public interface SalesDatailRepository extends BaseRepository<SalesDatail>{
 	 */
 	List<SalesDatail> findBySales_id(Long salesId);
 	/**
+	 * 根据销售单号查询羊只,json修改
+	 */
+	@Query("select count(1) from SalesDatail s where s.sales.id =?1 and s.checkStatus =?2" )
+	Integer findQuerySalesId(Long salesId,String status);
+	/**
 	 * 查询有多少只羊已确认
 	 * @param salesId
 	 * @param check_status 

@@ -30,6 +30,7 @@ public class SalesController extends BaseController<Sales,SalesService> {
 		return salesService.find(sales);
     }
 	
+	
 	/**
 	 * 销售单添加
 	 * */

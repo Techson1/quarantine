@@ -3,8 +3,10 @@ package com.beiqisoft.aoqun.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,6 +25,7 @@ import com.beiqisoft.aoqun.base.BaseEntity;
 import com.beiqisoft.aoqun.config.SystemM;
 import com.beiqisoft.aoqun.util.MyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 销售单
@@ -38,6 +41,7 @@ public class Sales extends BaseEntity{
 	/**客户*/
 	@ManyToOne @JoinColumn(name="customer_id")
 	private Customer customer;
+	
 	/**业务员*/
 	@ManyToOne @JoinColumn(name="contact_id")
 	private Contact contact;
@@ -83,6 +87,9 @@ public class Sales extends BaseEntity{
 	/**复合人*/
 	@Size(max=20)
 	private String reviewing;
+	
+	@Transient
+	private Integer checkCount;//已确认数量
 	/**
 	 * 复合日期
 	 * @deprecated
@@ -124,12 +131,14 @@ public class Sales extends BaseEntity{
 		init();
 		this.totalCount=MyUtils.strParseIntPlusOne(this.totalCount);
 		this.totalPrice=MyUtils.strPlusStr(this.totalPrice, salesDatail.getPrice());
+		
 		return this;
 	}
 	
 	public Sales sub(SalesDatail salesDatail){
 		this.totalCount=MyUtils.strParseIntSubOne(totalCount);
 		this.totalPrice=MyUtils.strSubStr(this.totalPrice, salesDatail.getPrice());
+		
 		return this;
 	}
 }

@@ -143,6 +143,17 @@ public class SalesController extends BaseController<Sales,SalesService> {
 	}
 	
 	/**
+	 * 根据场区区分销售单数据
+	 * @param orgId
+	 * @return
+	 */
+	@JSON(type=Sales.class,include="customer,id,code")
+	@JSON(type=Customer.class,include="firstName")
+	@RequestMapping(value="findListByOrgId")
+	public List<Sales> findListByOrgId(Long orgId){
+		return salesService.getRepository().findByOrg_id(orgId);
+	}
+	/**
 	 * 完成校验
 	 * */
 	@RequestMapping(value="accomplistVerify/{id}")

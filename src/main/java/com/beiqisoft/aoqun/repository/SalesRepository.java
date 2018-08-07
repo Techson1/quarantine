@@ -15,7 +15,12 @@ public interface SalesRepository extends BaseRepository<Sales>{
 	 * 根据是否可用查询
 	 * */
 	List<Sales> findByCheckFlag(String publicFalse);
-
+	/**
+	 * 根据分厂id获得销售单数据 
+	 * @param orgId
+	 * @return List<Sales>
+	 */
+    List<Sales> findByOrg_id(Long orgId);
 	/**
 	 * 根据名称查询
 	 * */

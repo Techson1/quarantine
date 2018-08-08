@@ -151,7 +151,7 @@ public class SalesController extends BaseController<Sales,SalesService> {
 	@JSON(type=Customer.class,include="firstName")
 	@RequestMapping(value="findListByOrgId")
 	public List<Sales> findListByOrgId(Long orgId){
-		return salesService.getRepository().findByOrg_id(orgId);
+		return salesService.getRepository().findByOrg_idAndCheckFlag(orgId,SystemM.PUBLIC_FALSE);
 	}
 	/**
 	 * 完成校验

@@ -20,7 +20,7 @@ public interface SalesRepository extends BaseRepository<Sales>{
 	 * @param orgId
 	 * @return List<Sales>
 	 */
-    List<Sales> findByOrg_id(Long orgId);
+    List<Sales> findByOrg_idAndCheckFlag(Long orgId,String publicFalse);
 	/**
 	 * 根据名称查询
 	 * */

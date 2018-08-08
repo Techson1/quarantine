@@ -119,7 +119,7 @@ public interface BaseInfoRepository extends BaseRepository<BaseInfo>{
 	/**
 	 * app查询出库羊只
 	 * */
-	@Query(value="FROM BaseInfo b WHERE b.physiologyStatus=?2 AND b.flag=0 AND b.code=?1")
+	@Query(value="FROM BaseInfo b WHERE b.physiologyStatus=?2 AND b.flag=0 AND (b.code=?1 or b.rfid=?1 )")
 	BaseInfo findByAppAudit(String code,Long type);
 
 	/**

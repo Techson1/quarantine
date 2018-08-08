@@ -61,7 +61,7 @@ public class BreedingPlanDetailDamController extends BaseController<BreedingPlan
 	public List<Message> verify(String[] codes,BreedingPlanDetailDam breedingPlanDetailDam){
 		List<Message> messages=new ArrayList<Message>();
 		for (String s:codes){
-			BaseInfo baseInfo=baseInfoService.getRepository().findByCode(s);
+			BaseInfo baseInfo=baseInfoService.getRepository().findByCodeOrRfid(s,s);//张波修改为电子耳号和可视耳号都能输入
 			if (baseInfo==null){
 				messages.add(new Message(ABNORMAL,s+":耳标不存在"));
 				continue;

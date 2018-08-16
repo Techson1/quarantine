@@ -30,8 +30,8 @@ public class CustomerController extends BaseController<Customer,CustomerService>
 		return customerService.find(customer);
     }
 	@RequestMapping(value ="selectAll")
-    public List<Customer> selectAll(Long orgId) throws InterruptedException{
-		return customerService.getRepository().findByOrgId(orgId);
+    public List<Customer> selectAll(Customer cusomer) throws InterruptedException{
+		return customerService.getRepository().findByOrgId(cusomer.getOrg().getId());
     }
 	/**
 	 * 客户名称校验

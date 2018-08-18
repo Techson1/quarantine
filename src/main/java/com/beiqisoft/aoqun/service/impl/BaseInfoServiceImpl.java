@@ -328,9 +328,9 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				return new Message(GlobalConfig.ABNORMAL,"该羊电子耳号已使用不能添加");
 			}
 		}
-		if(lamb.getInitialWeigh()==null){
+		/*if(lamb.getInitialWeigh()==null){
 			return new Message(GlobalConfig.ABNORMAL,"出生重为必填项");
-		}
+		}*/
 		return GlobalConfig.SUCCESS;
 	}
 

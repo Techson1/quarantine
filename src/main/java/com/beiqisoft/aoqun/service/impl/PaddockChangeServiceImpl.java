@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -179,9 +180,9 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 	@Cacheable(value="findAllTurnList", key = "#p0")
 	public Page<PaddockChangeVo> findAllTurnList(PaddockChange paddockChange) {
 		//Session session = entityManager.unwrap(org.hibernate.Session.class);
-		String keyPage = "turbar_page_"+paddockChange.getPageNum();
-		String keyList = "turbar_list"+paddockChange.getOrg().getId();
-		String  keyTotal="turbar_total";
+		String keyPage = "org_"+paddockChange.getOrg().getId()+"turbar_page_"+paddockChange.getPageNum();
+		String keyList = "org_"+paddockChange.getOrg().getId()+"turbar_list"+paddockChange.getOrg().getId();
+		String  keyTotal="org_"+paddockChange.getOrg().getId()+"turbar_total";
 		
 		//ValueOperations<String,Page<PaddockChangeVo>> operations =redisTemplate.opsForValue();
 		ValueOperations<String,Page<PaddockChangeVo>> operationsPage =redisTemplate.opsForValue();
@@ -196,12 +197,15 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 		 search=searchReslutCount(paddockChange,search);
 		 if(search==0) {//执行分页
 			 if(redisTemplate.hasKey(keyPage)) {//如果缓存里存在，则直接返回结果
+				 redisTemplate.expire(keyPage, 60*60*2, TimeUnit.SECONDS);
 				 return operationsPage.get(keyPage);
 			 }
 		 }
 		  //判断缓存中是否存在所有的数据
 		 if(redisTemplate.hasKey(keyList)) {
 			 listResult=listR.get(keyList);
+			 redisTemplate.expire(keyList, 60*60*2, TimeUnit.SECONDS);
+			 redisTemplate.expire(keyTotal, 60*60*2, TimeUnit.SECONDS);
 			 total=totalR.get(keyTotal);
 		 }else {
 			 StringBuilder sqlString=new StringBuilder();

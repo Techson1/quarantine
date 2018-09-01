@@ -1,6 +1,7 @@
 package com.beiqisoft.aoqun.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -42,4 +43,15 @@ public class Sterilize extends BaseEntity{
 	/**圈舍名称*/
 	@Transient
 	private String paddockName;
+	@Transient
+	private List<String> paddockIds;
+	
+	public Sterilize (Sterilize sterilize){
+		this.paddock = sterilize.getPaddock();
+		this.org = sterilize.getOrg();
+		this.sterilizeDate = sterilize.getSterilizeDate();
+		this.drugName = sterilize.getDrugName();
+		this.paddockName = sterilize.getPaddockName();
+		this.recorder = sterilize.getRecorder();
+	}
 }

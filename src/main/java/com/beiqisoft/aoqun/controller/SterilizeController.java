@@ -1,6 +1,7 @@
 package com.beiqisoft.aoqun.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.beiqisoft.aoqun.base.BaseController;
+import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.config.SystemM;
+import com.beiqisoft.aoqun.entity.Paddock;
 import com.beiqisoft.aoqun.entity.Sterilize;
 import com.beiqisoft.aoqun.service.SterilizeService;
 import com.beiqisoft.aoqun.util.excel.ExportDate;
@@ -23,7 +26,26 @@ public class SterilizeController extends BaseController<Sterilize,SterilizeServi
     public Page<Sterilize> list(Sterilize sterilize) throws InterruptedException{
 		return sterilizeService.find(sterilize);
     }
-	
+	@RequestMapping(value = "save")
+	public Message save(Sterilize entity) {
+		if(entity!=null){
+			List<String> paddockIds = entity.getPaddockIds();
+			if(paddockIds!=null&&paddockIds.size()>0){
+				List<Sterilize> entitys = new ArrayList<Sterilize>();
+				for(String paddockId:paddockIds){
+					if(paddockId!=null&&!"".equals(paddockId)){
+						Paddock paddock = new Paddock();
+						paddock.setId(Long.parseLong(paddockId));
+						entity.setPaddock(paddock);
+						Sterilize entity_ = new Sterilize(entity);
+						entitys.add(entity_);
+					}
+				}
+				getRepository().save(entitys);
+			}
+		}
+		return SUCCESS;
+	}
 	/**
 	 * 消毒记录
 	 * */

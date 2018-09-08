@@ -31,6 +31,15 @@ public interface BaseInfoRepository extends BaseRepository<BaseInfo>{
 	 * @return BaseInfo
 	 * */
 	BaseInfo findByCodeOrRfid(String code,String rfid);
+	/**
+	 * json 
+	 * 增加产区区分
+	 * @param code
+	 * @param rfid
+	 * @param orgId
+	 * @return
+	 */
+	BaseInfo findByCodeOrRfidAndOrgId(String code,String rfid,Long orgId);
 	
 	/**
 	 * 根据可视耳号查询归档羊只

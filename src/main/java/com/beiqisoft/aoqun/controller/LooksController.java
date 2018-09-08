@@ -25,7 +25,11 @@ public class LooksController extends BaseController<Looks,LooksService> {
 	@RequestMapping(value ="list")
     public Page<Looks> list(Looks looks) throws InterruptedException{
 		return page.pageAcquire(looksService.find(looks)).iteration(x -> {
-			x.setAge(DateUtils.dateSubDate(x.getDate(), x.getBase().getBirthDay()));
+			if(null!=x.getDate()) {
+				x.setAge(DateUtils.dateSubDate(x.getDate(), x.getBase().getBirthDay()));
+			}else {
+				x.setAge(null);
+			}
 			x.setCode(x.getBase().getCode());
 			x.setBirthDay(x.getBase().getBirthDay());
 			x.setSex(x.getBase().getSex());

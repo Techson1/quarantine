@@ -229,7 +229,7 @@ public class JoiningServiceImpl extends BaseServiceIml<Joining,JoiningRepository
 		}
 		if (nowParity!=null && nowJoning==null && DateUtils.dateSubDate(nowParity.getStartDate(), joiningDate)>=0){
 			return new Message(GlobalConfig.ABNORMAL,dam.getCode()
-					+":当前配种日期必须大于等于本胎次开始日期,该羊的上一次断奶日期为:"+nowParity.getStartDate());
+					+":当前配种日期必须大于等于本胎次开始日期,本胎次开始日期为:"+nowParity.getStartDate());
 		}
 		//TODO 最大5配改为10配
 		if (nowJoning!=null && nowJoning.getJoiningSeqReturnInteger()>=10){

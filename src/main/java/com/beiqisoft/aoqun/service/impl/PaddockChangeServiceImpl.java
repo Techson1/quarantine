@@ -161,9 +161,22 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 		baseInfoService.getRepository().save(baseList);
 	}
 
-	@Override
 	public Message addVerify(String earTag,Long paddockId) {
 		BaseInfo base = baseInfoService.findByCodeOrRfid(earTag);
+		if (base==null){
+			return GlobalConfig.setAbnormal(earTag+":该羊不存在");
+		}
+		if (paddockId==null){
+			return GlobalConfig.setAbnormal(earTag+":请选择圈舍");
+		}
+		if (base.getPaddock()!=null && base.getPaddock().getId().equals(paddockId)){
+			return GlobalConfig.setAbnormal(earTag+":圈舍相同不能添加");
+		}
+		return baseInfoService.flagVerify(base);
+	}
+	@Override
+	public Message addVerify(String earTag,Long paddockId,Long orgId) {
+		BaseInfo base = baseInfoService.findByCodeOrRfidAndOrgId(earTag,orgId);
 		if (base==null){
 			return GlobalConfig.setAbnormal(earTag+":该羊不存在");
 		}
@@ -190,7 +203,7 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 		//ValueOperations<String,Integer> totalR= redisTemplate.opsForValue();
 		
 		int startRow=paddockChange.getPageNum()* GlobalConfig.PAGE_SIZE;
-		int endRow=(paddockChange.getPageNum()+1)*GlobalConfig.PAGE_SIZE;
+		//int endRow=(paddockChange.getPageNum()+1)*GlobalConfig.PAGE_SIZE;
 		 int search=0;//查询条件个数
 		 search=searchReslutCount(paddockChange,search);
 		 /*if(search==0) {//执行分页
@@ -216,22 +229,37 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 					sqlString.append(" and v.code").append("='").append(paddockChange.getBase().getCode()).append("'");
 					countSql.append(" and b.code").append("='").append(paddockChange.getBase().getCode()).append("'");
 				}
-				if(null!=paddockChange.getFromPaddock() && null!=paddockChange.getFromPaddock().getId()) {
-					sqlString.append(" and  v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
-					countSql.append(" and   v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
+				if(paddockChange.getType().equals("0")) {//如果是0，则表是全部
+					if(null!=paddockChange.getFromPaddock() && null!=paddockChange.getFromPaddock().getId()) {
+						sqlString.append(" and (").append("   v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append(" or ").append(" v.to_Paddock_id").append("=").append(paddockChange.getFromPaddock().getId()).append(" )");
+						countSql.append(" and (").append(" v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append(" or ").append(" v.to_Paddock_id").append("=").append(paddockChange.getFromPaddock().getId()).append(" )");
+					}
+					if(null!=paddockChange.getToPaddock() && null!=paddockChange.getToPaddock().getId()) {
+						sqlString.append(" and (").append(" v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append(" or ").append("   v.from_paddock_Id").append("=").append(paddockChange.getToPaddock().getId()).append(" )");
+						countSql.append(" and (").append("  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append(" or ").append("   v.from_paddock_Id").append("=").append(paddockChange.getToPaddock().getId()).append(" )");
+					}
+					
+				}else {
+					if(null!=paddockChange.getFromPaddock() && null!=paddockChange.getFromPaddock().getId()) {
+						sqlString.append(" and  v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
+						countSql.append(" and   v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
+					}
+					if(null!=paddockChange.getToPaddock() && null!=paddockChange.getToPaddock().getId()) {
+						sqlString.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
+						countSql.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
+					}
+					
 				}
-				if(null!=paddockChange.getToPaddock() && null!=paddockChange.getToPaddock().getId()) {
-					sqlString.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
-					countSql.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
-				}
-				if(null!=paddockChange.getStartDate()) {
-					sqlString.append(" and v.ctime >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
-					countSql.append(" and v.ctime >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
-				}
-				if(null!=paddockChange.getEndDate()) {
-					sqlString.append(" and v.ctime <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
-					countSql.append(" and v.ctime <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
-				}
+				
+				 
+					if(null!=paddockChange.getStartDate()) {
+						sqlString.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
+						countSql.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
+					}
+					if(null!=paddockChange.getEndDate()) {
+						sqlString.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
+						countSql.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
+					}
 				
 				
 				sqlString.append("  order by v.ctime desc");

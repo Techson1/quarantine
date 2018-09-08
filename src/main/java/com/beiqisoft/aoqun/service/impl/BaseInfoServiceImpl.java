@@ -306,6 +306,9 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 	public BaseInfo findByCodeOrRfid(String code) {
 		return baseInfoRepository.findByCodeOrRfid(code,code);
 	}
+	public BaseInfo findByCodeOrRfidAndOrgId(String code,Long orgId) {
+		return baseInfoRepository.findByCodeOrRfidAndOrgId(code,code,orgId);
+	}
 
 	@Override
 	public Message lambSaveVerify(BaseInfo lamb) {
@@ -596,5 +599,13 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				return query.getRestriction();
 			}
 		});
+	}
+	@Override
+	public BaseInfo findByCode(String code) {
+		return baseInfoRepository.findByCode(code);
+	}
+	@Override
+	public BaseInfo findByRfid(String rfid) {
+		return baseInfoRepository.findByRfid(rfid);
 	}
 }

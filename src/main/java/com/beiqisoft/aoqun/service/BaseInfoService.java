@@ -82,6 +82,27 @@ public interface BaseInfoService extends BaseService<BaseInfo, BaseInfoRepositor
 	 * @return BaseInfo
 	 * */
 	BaseInfo findByCodeOrRfid(String code);
+	
+	/**
+	 * 通过可视耳号查询，返回具体羊只
+	 * @param code
+	 * @return
+	 */
+	BaseInfo findByCode(String code);
+	/**
+	 * 通过电子耳号查询羊只
+	 * @param rfid
+	 * @return
+	 */
+	BaseInfo findByRfid(String rfid);
+	
+	/**
+	 * 可视耳号 或者电子耳号，增加场区区分
+	 * @param code
+	 * @param orgId
+	 * @return
+	 */
+	BaseInfo findByCodeOrRfidAndOrgId(String code,Long orgId);
 
 	/**
 	 * 羔羊添加校验

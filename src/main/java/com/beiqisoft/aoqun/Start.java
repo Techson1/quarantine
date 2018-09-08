@@ -28,7 +28,7 @@ public class Start implements EmbeddedServletContainerCustomizer{
 		TomcatEmbeddedServletContainerFactory factory = (TomcatEmbeddedServletContainerFactory) container;
 		container.setPort(8080);
 		//设置工作记录目录
-		factory.setBaseDirectory(new File("E:/temps"));
+		factory.setBaseDirectory(new File("C:/temps"));
 		//设置日志(并不是事实记录)
 		factory.addEngineValves(getLogAccessLogValue());
 		//设置连接数
@@ -44,7 +44,7 @@ public class Start implements EmbeddedServletContainerCustomizer{
 	private AccessLogValve getLogAccessLogValue() {
 		AccessLogValve log = new AccessLogValve();
 		//日志目录
-		log.setDirectory("e:/temps");
+		log.setDirectory("c:/temps");
 		//开始日志
 		log.setEnabled(true);
 		//日志级别

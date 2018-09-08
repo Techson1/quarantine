@@ -35,7 +35,7 @@ public interface PaddockChangeService extends BaseService<PaddockChange, Paddock
 	 * @param recorder 
 	 * */
 	void addAll(Paddock fromPaddock, Paddock toPaddock,String recorder, Organization org);
-
 	Message addVerify(String earTag,Long paddockId);
+	Message addVerify(String earTag,Long paddockId,Long orgId);
 	
 }

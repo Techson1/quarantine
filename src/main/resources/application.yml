@@ -7,7 +7,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/aoquntest?characterEncoding=utf8&useSSL=false
     #url: jdbc:mysql://172.16.11.52:3306/aoquntest?characterEncoding=utf8
     username: root
-    password: Zhangbo110.
+    password: 123456
     # 初始化大小，最小，最大
     initialSize: 5
     minIdle: 5
@@ -40,8 +40,8 @@ spring:
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
-        format_sql: false
+      dialect: org.hibernate.dialect.MySQL5Dialect
+      format_sql: false
 jwt:
   header: Authorization
   secret: mySecret

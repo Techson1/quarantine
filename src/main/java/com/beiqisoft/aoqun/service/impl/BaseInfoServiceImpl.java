@@ -126,7 +126,7 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
-		},new PageRequest(baseInfo.getPageNum(), 150, Sort.Direction.DESC, "birthDay"));
+		},new PageRequest(baseInfo.getPageNum(), 1000, Sort.Direction.DESC, "birthDay"));
 	}
 	public Page<BaseInfo> find(BaseInfo baseInfo, int size) {
 		return baseInfoRepository.findAll(new Specification<BaseInfo>() {

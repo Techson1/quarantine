@@ -1,12 +1,17 @@
 package com.beiqisoft.aoqun.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.beiqisoft.aoqun.base.BaseService;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.BaseInfo;
 import com.beiqisoft.aoqun.entity.Weight;
 import com.beiqisoft.aoqun.repository.WeightRepository;
+import com.beiqisoft.aoqun.vo.WeightVo;
 
 public interface WeightService extends BaseService<Weight, WeightRepository>{
 	/**
@@ -32,5 +37,6 @@ public interface WeightService extends BaseService<Weight, WeightRepository>{
 	 * 出生重添加
 	 * */
 	void addBirthWeight(BaseInfo baseInfo);
-	
+
+	List<WeightVo>  weightExcel(String filepath,int code_type,int weightType,Long orgId) throws Exception;
 }

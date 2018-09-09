@@ -99,15 +99,26 @@ public abstract class BaseServiceIml<T,R> implements BaseService<T,R> {
 					if (fieldName.endsWith(ASSIST_START)){
 						list.add(criteriaBuilder.greaterThanOrEqualTo(
 								root.join(fieldParents[0], JoinType.INNER).get(fieldNameAnalysis(fieldName,"start")),(Date) val));
-					}
-					if (fieldName.endsWith(ASSIST_END)){
+					}else if (fieldName.endsWith(ASSIST_END)){
 						list.add(criteriaBuilder.lessThanOrEqualTo(
 								root.join(fieldParents[0], JoinType.INNER).get(fieldNameAnalysis(fieldName,"end")),(Date) val));
+					}else {
+						if(fieldName.indexOf("Day")>-1) {
+							list.add(criteriaBuilder.equal(
+									root.join(fieldParents[0], JoinType.INNER).get(fieldName),(Date) val));
+						}
+						
 					}
 					// if(fieldName.endsWith(ASSIST_START) AND field)
 				}
 				if (type.endsWith("String")){
-					list.add(criteriaBuilder.like(root.join(fieldParents[0], JoinType.INNER).get(fieldName), "%" + val + "%"));
+					if(fieldName.equals("moonAge")) {//如果是月龄，精确查询
+						list.add(criteriaBuilder.equal(
+								root.join(fieldParents[0], JoinType.INNER).get(fieldName), val));
+					}else {
+						list.add(criteriaBuilder.like(root.join(fieldParents[0], JoinType.INNER).get(fieldName), "%" + val + "%"));
+					}
+					
 				}
 				if (type.endsWith("Long")){
 					list.add(criteriaBuilder.equal(root.join(fieldParents[0], JoinType.INNER).get(fieldName), val));

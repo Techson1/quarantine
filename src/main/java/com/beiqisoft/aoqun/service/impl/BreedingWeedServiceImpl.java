@@ -44,7 +44,7 @@ public class BreedingWeedServiceImpl extends BaseServiceIml<BreedingWeed,Breedin
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
-		},new PageRequest(breedingWeed.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "ctime"));
+		},new PageRequest(breedingWeed.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "date"));
 	}
 	
 	public Page<BreedingWeed> find(BreedingWeed breedingWeed, int size) {

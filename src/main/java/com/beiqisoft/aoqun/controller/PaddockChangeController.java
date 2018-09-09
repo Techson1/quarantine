@@ -49,7 +49,7 @@ public class PaddockChangeController extends BaseController<PaddockChange,Paddoc
 	@JSON(type=Paddock.class,include="name")
 	@JSON(type=Organization.class,include="brief")
 	@RequestMapping(value ="findAllTurnList")
-	@Cacheable(value="paddockChangeCache")
+	//@Cacheable(value="paddockChangeCache")
 	public Page<PaddockChangeVo> findAllTurnList(PaddockChange paddockChange){
 		
 		return paddockChangeService.findAllTurnList(paddockChange);
@@ -63,9 +63,17 @@ public class PaddockChangeController extends BaseController<PaddockChange,Paddoc
 		}
 		return list;
 	}
+	/**
+	 * 转栏只修改单只 增加场区区分
+	 * @param earTag
+	 * @param paddockId
+	 * @param orgId
+	 * @return  Message
+	 * @author json
+	 */
 	@RequestMapping(value="addVerify")
-	public Message addVerify(String earTag,Long paddockId){
-		return paddockChangeService.addVerify(earTag,paddockId);
+	public Message addVerify(String earTag,Long paddockId,Long orgId){
+		return paddockChangeService.addVerify(earTag,paddockId,orgId);
 	}
 	@RequestMapping(value="adds")
 	public Message add(PaddockChange paddockChange,String[] earTags){

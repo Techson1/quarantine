@@ -97,8 +97,11 @@ public class Weight extends BaseEntity{
 			this.lastDay=DateUtils.dateSubDate(this.weighthDate,weight.getWeighthDate())+"";
 			int w1=(int) (Double.parseDouble(this.weights)*1000);
 			int w2=(int) (Double.parseDouble(weight.getWeights())*1000);
+			if("0".equals(lastDay)) {
+				return null;
+			}
 		    daily=((w1-w2)/Integer.parseInt(lastDay))+"";
-		}
+		} 
 		return this;
 	}
 

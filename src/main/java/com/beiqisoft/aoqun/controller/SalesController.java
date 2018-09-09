@@ -70,15 +70,18 @@ public class SalesController extends BaseController<Sales,SalesService> {
 	public Message checkReviewSheep(@PathVariable Long id,@PathVariable String reviewing) {
 		log.info("start checkReviewSheep...");
 		Sales sales=salesService.getRepository().findOne(id);
-		log.debug("checkReviewSheep totalcount："+sales.getTotalCount());
+		log.info("checkReviewSheep totalcount："+sales.getTotalCount());
 		List<SalesDatail> list=salesDatailService.getRepository().findBySalesIdAndCheckStatus(Long.valueOf(id), "1");
 		if(null==sales.getTotalCount()) {
 			return COUNT_NULL;
 		}
 		if(null!=list&&Integer.valueOf(sales.getTotalCount())==list.size()) {
 			log.info("end checkReviewSheep.....");
+			//设置为已经复核
+			salesService.getRepository().save(sales.setAudit(new Date(), reviewing));
 			return SUCCESS;
 		}else {
+			
 			return FAIL;
 		}
 		/*String ids[]=sheepids.split(",");

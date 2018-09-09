@@ -96,6 +96,7 @@ public class PregnancyServiceImpl extends BaseServiceIml<Pregnancy,PregnancyRepo
 					+":只有繁殖状态为已配种的羊才能测孕,该羊只的繁殖状态为:"
 						+SystemM.baseInfoBreedingRturnChinese(dam.peelBreedingState()));
 		}
+		//如果是妊娠或者未孕 ，提示：该羊状态为妊娠或者未孕，测孕日期为2018-01-01 ，是否覆盖该条记录，继续流程，更新 
 		Parity nowParity=parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE, dam.getId());
 		if (nowParity==null){
 			return new Message(GlobalConfig.ABNORMAL,dam.getCode()+":该羊的胎次不存在,请联系维护人员");

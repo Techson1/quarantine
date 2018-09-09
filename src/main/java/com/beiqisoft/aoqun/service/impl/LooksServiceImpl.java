@@ -40,7 +40,7 @@ public class LooksServiceImpl extends BaseServiceIml<Looks,LooksRepository> impl
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
-		},new PageRequest(looks.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "date"));
+		},new PageRequest(looks.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "ctime"));
 	}
 	
 	public Page<Looks> find(Looks looks, int size) {

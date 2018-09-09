@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +34,14 @@ public class BaseGroupDetailServiceImpl extends BaseServiceIml<BaseGroupDetail,B
 					CriteriaBuilder criteriaBuilder) {
 				List<Predicate> list = getEntityPredicate(baseGroupDetail,root,criteriaBuilder);
 				//TODO query.from(BaseGroupDetail.class).fetch("base", JoinType.LEFT);
-				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				Path<String> code= root.get("base").get("code"); 
+				if(null!= baseGroupDetail.getBase() && StringUtils.isNotEmpty(baseGroupDetail.getBase().getCode())) {
+					//query.where(criteriaBuilder.equal(code, baseGroupDetail.getBase().getCode()));
+					query.where(criteriaBuilder.equal(code, baseGroupDetail.getBase().getCode()));
+				}else {
+
+					query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				}
 				return query.getRestriction();
 			}
 		},new PageRequest(baseGroupDetail.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "ctime"));

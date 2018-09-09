@@ -48,7 +48,7 @@ public class IllnessWeedServiceImpl extends BaseServiceIml<IllnessWeed,IllnessWe
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
-		},new PageRequest(illnessWeed.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "ctime"));
+		},new PageRequest(illnessWeed.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "date"));
 	}
 	
 	public Page<IllnessWeed> find(IllnessWeed illnessWeed, int size) {

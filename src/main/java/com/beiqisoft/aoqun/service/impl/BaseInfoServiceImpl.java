@@ -126,7 +126,7 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
-		},new PageRequest(baseInfo.getPageNum(), 150, Sort.Direction.DESC, "birthDay"));
+		},new PageRequest(baseInfo.getPageNum(), 1000, Sort.Direction.DESC, "birthDay"));
 	}
 	public Page<BaseInfo> find(BaseInfo baseInfo, int size) {
 		return baseInfoRepository.findAll(new Specification<BaseInfo>() {
@@ -306,6 +306,9 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 	public BaseInfo findByCodeOrRfid(String code) {
 		return baseInfoRepository.findByCodeOrRfid(code,code);
 	}
+	public BaseInfo findByCodeOrRfidAndOrgId(String code,Long orgId) {
+		return baseInfoRepository.findByCodeOrRfidAndOrgId(code,code,orgId);
+	}
 
 	@Override
 	public Message lambSaveVerify(BaseInfo lamb) {
@@ -328,9 +331,9 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				return new Message(GlobalConfig.ABNORMAL,"该羊电子耳号已使用不能添加");
 			}
 		}
-		if(lamb.getInitialWeigh()==null){
+		/*if(lamb.getInitialWeigh()==null){
 			return new Message(GlobalConfig.ABNORMAL,"出生重为必填项");
-		}
+		}*/
 		return GlobalConfig.SUCCESS;
 	}
 
@@ -596,5 +599,13 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 				return query.getRestriction();
 			}
 		});
+	}
+	@Override
+	public BaseInfo findByCode(String code) {
+		return baseInfoRepository.findByCode(code);
+	}
+	@Override
+	public BaseInfo findByRfid(String rfid) {
+		return baseInfoRepository.findByRfid(rfid);
 	}
 }

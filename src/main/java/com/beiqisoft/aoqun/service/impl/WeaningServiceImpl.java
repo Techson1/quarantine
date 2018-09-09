@@ -84,15 +84,13 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 	public Page<WeaningVo> findPageWeaning(final Weaning weaning){
 		 
 		StringBuilder qlString=new StringBuilder();
-		qlString.append("select  info.code,bree.breed_name as breedName,par.parity_max_number as parityMaxNumber,lad.born_date as bornDate,lad.born_times as bornTimes,t.weaning_date as weaningDate,t.recorder,t.ctime,t.id from t_weaning t ,\r\n" + 
-				" t_base_info info,t_breed bree,t_parity par,t_lambing_dam lad \r\n" + 
-				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id\r\n" + 
-				" and t.parity_id=par.id ");
+		qlString.append(" select info.code,bree.breed_name as breedName,par.parity_max_number as parityMaxNumber,lad.born_date as bornDate,lad.born_times as bornTimes,t.weaning_date as weaningDate,t.recorder,t.ctime,t.id  \r\n" + 
+				" from t_weaning t inner join t_base_info info on t.dam_id=info.id \r\n" + 
+				" inner join t_breed bree on info.breed_id=bree.id \r\n" + 
+				" inner join t_parity par on t.parity_id=par.id \r\n" + 
+				" inner join t_lambing_dam lad on lad.parity_id=t.parity_id where 1=1");
 		StringBuilder countTotalBuffer=new StringBuilder();
-		countTotalBuffer.append("select  count(1) from aoquntest.t_weaning t ," + 
-				" t_base_info info,t_breed bree,t_parity par,t_lambing_dam lad " + 
-				" where   t.dam_id=info.dam_id and info.breed_id=bree.id and t.lambing_dam_id=lad.id" + 
-				" and t.parity_id=par.id");
+		countTotalBuffer.append("select  count(1) from aoquntest.t_weaning t,t_base_info info where t.dam_id=info.id ");
 		
 		if(null!=weaning.getOrg().getId()) {
 			qlString.append(" and t.org_id=").append(weaning.getOrg().getId());
@@ -111,12 +109,13 @@ public class WeaningServiceImpl extends BaseServiceIml<Weaning,WeaningRepository
 			countTotalBuffer.append(" and t.weaning_date <= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistEnd(), "yyyy-MM-dd")).append("'");
 			qlString.append(" and t.weaning_date <= ").append("'").append(DateUtils.getStrDate(weaning.getWeaningDateAssistEnd(), "yyyy-MM-dd")).append("'");
 		}
-		Query countQuery = this.entityManager.createNativeQuery(qlString.toString());
+		Query countQuery = this.entityManager.createNativeQuery(qlString.append(" order by t.weaning_date desc").toString());
 		Query countQueryCount=  entityManager.createNativeQuery(countTotalBuffer.toString());
 		Long total=Long.valueOf(countQueryCount.getSingleResult().toString());
 
-		countQuery.setFirstResult(weaning.getPageNum()*10);
-		countQuery.setMaxResults(10);
+		
+		countQuery.setFirstResult(weaning.getPageNum()*GlobalConfig.PAGE_SIZE);
+		countQuery.setMaxResults(GlobalConfig.PAGE_SIZE);
 		List<Object[]> list=countQuery.getResultList();
 		
          Page<WeaningVo> incomeDailyPage = new PageImpl<WeaningVo>(getBean(list),new PageRequest(weaning.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"),total);

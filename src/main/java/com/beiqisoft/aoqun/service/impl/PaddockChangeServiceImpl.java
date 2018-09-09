@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -160,7 +161,6 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 		baseInfoService.getRepository().save(baseList);
 	}
 
-	@Override
 	public Message addVerify(String earTag,Long paddockId) {
 		BaseInfo base = baseInfoService.findByCodeOrRfid(earTag);
 		if (base==null){
@@ -174,66 +174,124 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 		}
 		return baseInfoService.flagVerify(base);
 	}
+	@Override
+	public Message addVerify(String earTag,Long paddockId,Long orgId) {
+		BaseInfo base = baseInfoService.findByCodeOrRfidAndOrgId(earTag,orgId);
+		if (base==null){
+			return GlobalConfig.setAbnormal(earTag+":该羊不存在");
+		}
+		if (paddockId==null){
+			return GlobalConfig.setAbnormal(earTag+":请选择圈舍");
+		}
+		if (base.getPaddock()!=null && base.getPaddock().getId().equals(paddockId)){
+			return GlobalConfig.setAbnormal(earTag+":圈舍相同不能添加");
+		}
+		return baseInfoService.flagVerify(base);
+	}
 
 	@Override
-	@Cacheable(value="findAllTurnList", key = "#p0")
 	public Page<PaddockChangeVo> findAllTurnList(PaddockChange paddockChange) {
 		//Session session = entityManager.unwrap(org.hibernate.Session.class);
-		String keyPage = "turbar_page_"+paddockChange.getPageNum();
-		String keyList = "turbar_list"+paddockChange.getOrg().getId();
-		String  keyTotal="turbar_total";
+		//String keyPage = "org_"+paddockChange.getOrg().getId()+"turbar_page_"+paddockChange.getPageNum();
+		//String keyList = "org_"+paddockChange.getOrg().getId()+"turbar_list"+paddockChange.getOrg().getId();
+		//String  keyTotal="org_"+paddockChange.getOrg().getId()+"turbar_total";
 		
 		//ValueOperations<String,Page<PaddockChangeVo>> operations =redisTemplate.opsForValue();
-		ValueOperations<String,Page<PaddockChangeVo>> operationsPage =redisTemplate.opsForValue();
+		//ValueOperations<String,Page<PaddockChangeVo>> operationsPage =redisTemplate.opsForValue();
 		
-		ValueOperations<String,List<Object[]>> listR=redisTemplate.opsForValue();
-		ValueOperations<String,Integer> totalR= redisTemplate.opsForValue();
+		//ValueOperations<String,List<Object[]>> listR=redisTemplate.opsForValue();
+		//ValueOperations<String,Integer> totalR= redisTemplate.opsForValue();
 		
 		int startRow=paddockChange.getPageNum()* GlobalConfig.PAGE_SIZE;
-		int endRow=(paddockChange.getPageNum()+1)*GlobalConfig.PAGE_SIZE;
-		
+		//int endRow=(paddockChange.getPageNum()+1)*GlobalConfig.PAGE_SIZE;
 		 int search=0;//查询条件个数
 		 search=searchReslutCount(paddockChange,search);
-		 if(search==0) {//执行分页
+		 /*if(search==0) {//执行分页
 			 if(redisTemplate.hasKey(keyPage)) {//如果缓存里存在，则直接返回结果
+				 redisTemplate.expire(keyPage, 60*60*2, TimeUnit.SECONDS);
 				 return operationsPage.get(keyPage);
 			 }
-		 }
+		 }*/
 		  //判断缓存中是否存在所有的数据
-		 if(redisTemplate.hasKey(keyList)) {
+		 /*if(redisTemplate.hasKey(keyList)) {
 			 listResult=listR.get(keyList);
+			 redisTemplate.expire(keyList, 60*60*2, TimeUnit.SECONDS);
+			 redisTemplate.expire(keyTotal, 60*60*2, TimeUnit.SECONDS);
 			 total=totalR.get(keyTotal);
-		 }else {
+		 }else {*/
 			 StringBuilder sqlString=new StringBuilder();
 				sqlString.append("select v.code,v.breed_name,v.Sex,v.from_name,k.Name as to_name,v.org_name,v.recorder,v.ctime,v.from_paddock_Id,v.to_Paddock_id,v.cdate from t_bar_change_view v,t_paddock k where v.to_Paddock_id=k.id ");
 				sqlString.append(" and v.org_id=").append("'").append(paddockChange.getOrg().getId()).append("'");
-				
 				StringBuilder countSql=new StringBuilder();
+				countSql.append("select count(1) from t_paddock_change v ,t_base_info b where v.base_id=b.id and v.org_id=").append("'").append(paddockChange.getOrg().getId()).append("'");
+				
+				if(null!=paddockChange.getBase() && StringUtils.isNotEmpty(paddockChange.getBase().getCode())) {
+					sqlString.append(" and v.code").append("='").append(paddockChange.getBase().getCode()).append("'");
+					countSql.append(" and b.code").append("='").append(paddockChange.getBase().getCode()).append("'");
+				}
+				if(paddockChange.getType().equals("0")) {//如果是0，则表是全部
+					if(null!=paddockChange.getFromPaddock() && null!=paddockChange.getFromPaddock().getId()) {
+						sqlString.append(" and (").append("   v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append(" or ").append(" v.to_Paddock_id").append("=").append(paddockChange.getFromPaddock().getId()).append(" )");
+						countSql.append(" and (").append(" v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append(" or ").append(" v.to_Paddock_id").append("=").append(paddockChange.getFromPaddock().getId()).append(" )");
+					}
+					if(null!=paddockChange.getToPaddock() && null!=paddockChange.getToPaddock().getId()) {
+						sqlString.append(" and (").append(" v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append(" or ").append("   v.from_paddock_Id").append("=").append(paddockChange.getToPaddock().getId()).append(" )");
+						countSql.append(" and (").append("  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append(" or ").append("   v.from_paddock_Id").append("=").append(paddockChange.getToPaddock().getId()).append(" )");
+					}
+					
+				}else {
+					if(null!=paddockChange.getFromPaddock() && null!=paddockChange.getFromPaddock().getId()) {
+						sqlString.append(" and  v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
+						countSql.append(" and   v.from_paddock_Id").append("=").append(paddockChange.getFromPaddock().getId()).append("");
+					}
+					if(null!=paddockChange.getToPaddock() && null!=paddockChange.getToPaddock().getId()) {
+						sqlString.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
+						countSql.append(" and  v.to_Paddock_id").append("=").append(paddockChange.getToPaddock().getId()).append("");
+					}
+					
+				}
+				
+				 
+					if(null!=paddockChange.getStartDate()) {
+						sqlString.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
+						countSql.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') >='").append(DateUtils.getStrDate(paddockChange.getStartDate(), "yyyy-MM-dd")).append("'");
+					}
+					if(null!=paddockChange.getEndDate()) {
+						sqlString.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
+						countSql.append(" and DATE_FORMAT(v.ctime,'%Y-%m-%d') <='").append(DateUtils.getStrDate(paddockChange.getEndDate(), "yyyy-MM-dd")).append("'");
+					}
+				
 				
 				sqlString.append("  order by v.ctime desc");
 				
 				Query reusltQuery = this.entityManager.createNativeQuery(sqlString.toString());
+				Query countQuery = this.entityManager.createNativeQuery(countSql.toString());
 				
+				reusltQuery.setFirstResult(startRow);
+				reusltQuery.setMaxResults(GlobalConfig.PAGE_SIZE);
 			    listResult=reusltQuery.getResultList();
-			    int total= listResult.size();
-			    listR.set(keyList, listResult);
-		 }
+			    
+			    
+			    int total= Integer.valueOf(countQuery.getResultList().get(0).toString());
+			    //listR.set(keyList, listResult);
+		 //}
 		
 		
 		 List<PaddockChangeVo> newList=getSearchBean(listResult,paddockChange);//这里数据量太大，几十万的数据，待改进
 		
-		 int reuslttotal=newList.size();
+		/* int reuslttotal=newList.size();
 		 if(startRow>reuslttotal) {
 			 startRow=0;
 		 }
 		 if(endRow>reuslttotal) {
 			 endRow=reuslttotal;
-		 }
-		 totalR.set(keyTotal, reuslttotal);
-		 Page<PaddockChangeVo> incomeDailyPage = new PageImpl<PaddockChangeVo>(newList.subList(startRow, endRow),new PageRequest(paddockChange.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"),reuslttotal);
-		 if(search==0) {
+		 }*/
+		 //totalR.set(keyTotal, reuslttotal);
+		 //Page<PaddockChangeVo> incomeDailyPage = new PageImpl<PaddockChangeVo>(newList.subList(startRow, endRow),new PageRequest(paddockChange.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"),total);
+		 Page<PaddockChangeVo> incomeDailyPage = new PageImpl<PaddockChangeVo>(newList,new PageRequest(paddockChange.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "weaningDate","ctime"),total);
+		 /*if(search==0) {
 			 operationsPage.set(keyPage, incomeDailyPage);
-		 }
+		 }*/
 		 return incomeDailyPage;
 		
 	}
@@ -258,9 +316,9 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 			  vo.setFromPaddockId(String.valueOf(ob[8]));
 			  vo.setToPaddockId(String.valueOf(ob[9]));
 			  // System.out.println(falg+"--"+falg2+"--"+falg3+"--"+falg4+"--"+falg5+"--"+falg6+"--");
-			   if(checkSearch(vo,searchModel)) {
+			   //if(checkSearch(vo,searchModel)) {
 				   result.add(vo);
-			   }
+			  // }
 		  }
 		 /* Collections.sort(result, new Comparator<PaddockChangeVo>() {
 		       public int compare(PaddockChangeVo h1, PaddockChangeVo h2) {

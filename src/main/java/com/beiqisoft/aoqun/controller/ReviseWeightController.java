@@ -51,7 +51,7 @@ public class ReviseWeightController extends BaseController<ReviseWeight,ReviseWe
 			r.setBreedName(r.getBase().getBreed().getBreedName());
 			r.setSex(r.getBase().getSex().equals(SystemM.PUBLIC_SEX_SIRE)?"公羊":"母羊");
 			r.setBirthDay(DateUtils.DateToStr(r.getBase().getBirthDay()));
-			r.setMonthAge(r.getBase().getMoonAge());
+			r.setMonthAge(String.valueOf(r.getBase().getMoonAge()));
 			r.setInitialWeigh(r.getBase().getInitialWeigh()+"");
 			r.setWeaningAge(r.getBase().getWeaningDay()+"");
 			r.setWeaningWeight(r.getBase().getWeaningWeight()+"");

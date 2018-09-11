@@ -40,7 +40,15 @@ public interface BaseInfoRepository extends BaseRepository<BaseInfo>{
 	 * @return
 	 */
 	BaseInfo findByCodeOrRfidAndOrgId(String code,String rfid,Long orgId);
-	
+	/**
+	 * @author json
+	 * @param code    可视耳号
+	 * @param rfid     电子耳号
+	 * @param orgId    组织机构代码
+	 * @param physiologyStatus  库存状态
+	 * @return BaseInfo
+	 */
+	BaseInfo findByCodeOrRfidAndOrgIdAndPhysiologyStatus(String code,String rfid,Long orgId,Long physiologyStatus);
 	/**
 	 * 根据可视耳号查询归档羊只
 	 * @param code

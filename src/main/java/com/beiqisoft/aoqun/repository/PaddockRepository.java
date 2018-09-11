@@ -13,6 +13,8 @@ public interface PaddockRepository extends BaseRepository<Paddock>{
 
 	Paddock findByName(String paddockName);
 	
+	Paddock findByNameAndOrgId(String paddockName,Long orgId);
+	
 	@Query(value = "SELECT new OnHand(b.paddock,count(*)) "
 			+ "FROM BaseInfo b "
 			+ "WHERE b.physiologyStatus=1 AND b.flag='0' "

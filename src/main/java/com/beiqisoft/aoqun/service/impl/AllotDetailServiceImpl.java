@@ -76,12 +76,16 @@ public class AllotDetailServiceImpl extends BaseServiceIml<AllotDetail,AllotDeta
 	@Override
 	public Message addVerify(String code,Long orgId,Long allotId) {
 		message = baseInfoService.flagVerify(code);
-		if (!message.isCodeEqNormal()){
+		/*if (!message.isCodeEqNormal()){
 			return message;
 		}
 		if (baseInfoService.findByCodeOrRfid(code).getOrg().getId()!=orgId){
 			return GlobalConfig.setAbnormal("该羊只不存在,不能添加");
 		}
+		*/
+		/************增加组织机构和库存状态校验********************/ 
+		message =baseInfoService.flagVerifyAndPhysiologyStatus(code, orgId, 1L);
+		
 		Long sum=allotDetailRepository.findByAllot_id(allotId);
 		if (sum!=null && sum>500){
 			return GlobalConfig.setAbnormal("调拨羊只不能大于500");
@@ -97,7 +101,7 @@ public class AllotDetailServiceImpl extends BaseServiceIml<AllotDetail,AllotDeta
 		allotDetail.add(base,allot);
 		allotDetail.setRecorder(recorder);
 		base.setPhysiologyStatus(MyUtils.strToLong(SystemM.ALLOT_DETAIL));
-		allotDetail.setToPaddock(paddockRepository.findByName("虚拟圈"));
+		allotDetail.setToPaddock(paddockRepository.findByNameAndOrgId("虚拟圈",1L));
 		allotDetailRepository.save(allotDetail);
 		baseInfoService.getRepository().save(base);
 		return allotDetail;

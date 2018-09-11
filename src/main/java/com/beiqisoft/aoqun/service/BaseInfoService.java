@@ -155,6 +155,11 @@ public interface BaseInfoService extends BaseService<BaseInfo, BaseInfoRepositor
 	 * 校验
 	 */
 	Message flagVerify(String earTag);
+	/**
+	 * 校验,增加库存状态
+	 */
+	Message flagVerifyAndPhysiologyStatus(String earTag,Long orgId,Long physiologyStatus);
+	
 
 	/**
 	 * 不查询校验

@@ -608,4 +608,20 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 	public BaseInfo findByRfid(String rfid) {
 		return baseInfoRepository.findByRfid(rfid);
 	}
+	/**
+	 * @author json
+	 *   增加组织机构和 库存状态校验
+	 */
+	public Message flagVerifyAndPhysiologyStatus(String earTag, Long orgId, Long physiologyStatus) {
+		 
+		 BaseInfo baseInfo= baseInfoRepository.findByCodeOrRfidAndOrgIdAndPhysiologyStatus(earTag,earTag,orgId,physiologyStatus);
+			if (baseInfo==null){
+				return GlobalConfig.setAbnormal(earTag+":该羊不存在");
+			}
+			if (SystemM.PUBLIC_TRUE.equals(baseInfo.getFlag())){
+				return GlobalConfig.setIsPass(earTag+":该羊是归档羊");
+			}
+			
+			return GlobalConfig.SUCCESS;
+	}
 }

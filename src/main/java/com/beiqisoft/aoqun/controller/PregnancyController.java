@@ -72,6 +72,15 @@ public class PregnancyController extends BaseController<Pregnancy,PregnancyServi
 	}
 	
 	/**
+	 * 测孕批量校验
+	 * 		web端与app端公用
+	 * */
+	@RequestMapping(value ="verify")
+	public Message verify(String damCode){
+		return pregnancyService.verify(damCode,baseInfoService.findByCodeOrRfid(damCode));
+	}
+	
+	/**
 	 * 
 	 * */
 	@RequestMapping(value="appAdd")

@@ -23,4 +23,10 @@ public interface PregnancyRepository extends BaseRepository<Pregnancy>{
 	
 	List<Pregnancy> findByParity_idOrderByPregnancySeqDesc(Long parityId);
 	
+	/**
+	 * 根据胎次查询测孕记录并降序排序
+	 * */
+	
+	List<Pregnancy> findByDam_idOrderByCtimeDesc(Long damId);
+	
 }

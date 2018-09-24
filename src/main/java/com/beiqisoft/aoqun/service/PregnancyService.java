@@ -32,6 +32,12 @@ public interface PregnancyService extends BaseService<Pregnancy, PregnancyReposi
 	Message verify(String damCode,BaseInfo dam,Date pregnancyDate);
 	
 	/**
+	 * 测孕校验
+	 *  获取母羊上次测孕信息
+	 * */
+	Message verify(String damCode,BaseInfo dam);
+	
+	/**
 	 * 测孕添加
 	 * 一、添加测孕
 	 * 二、修改胎次

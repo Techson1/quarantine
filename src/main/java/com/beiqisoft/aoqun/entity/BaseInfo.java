@@ -223,6 +223,8 @@ public class BaseInfo extends BaseEntity{
 	private String breedingStateDetail;
 	@Transient
 	private String paddockName;
+	@Transient
+	private String verifyMsg;
 	public BaseInfo(String code,Date birthDay,Long breedId){
 		this.code=code;
 		this.birthDay=birthDay;

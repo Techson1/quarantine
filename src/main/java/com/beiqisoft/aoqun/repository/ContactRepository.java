@@ -21,6 +21,15 @@ public interface ContactRepository extends BaseRepository<Contact>{
 	List<Contact> findByFlagAndContactType_id(String publicTrue, Long id);
 
 	/**
+	 * 增加场区区分，下拉饲养员
+	 * @param publicTrue
+	 * @param id
+	 * @param orgId
+	 * @return List<Contact>
+	 */
+	List<Contact> findByFlagAndContactType_idAndOrgId(String publicTrue, Long id,Long orgId);
+	
+	/**
 	 * 分厂查询
 	 * */
 	List<Contact> findByFlagAndContactType_idAndOrg_id(String publicTrue, Long contactTypeId, Long OrgId);

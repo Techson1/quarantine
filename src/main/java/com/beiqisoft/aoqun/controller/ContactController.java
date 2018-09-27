@@ -40,7 +40,17 @@ public class ContactController extends BaseController<Contact,ContactService> {
 		return contactService.getRepository().findByFlagAndContactType_id(
 				SystemM.PUBLIC_TRUE,contactTypeService.getRepository().findByType("饲养员").getId());
 	}
-	
+	/**
+	 * 增加场区区分
+	 * @author json
+	 * @param orgId
+	 * @return
+	 */
+	@RequestMapping(value="breederOrgid")
+	public List<Contact> breederOrgid(Long orgId){
+		return contactService.getRepository().findByFlagAndContactType_idAndOrgId(
+				SystemM.PUBLIC_TRUE,contactTypeService.getRepository().findByType("饲养员").getId(),orgId);
+	}
 	/**
 	 * 供应商查询
 	 * */

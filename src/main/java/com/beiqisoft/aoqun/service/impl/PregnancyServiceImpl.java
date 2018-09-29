@@ -91,11 +91,21 @@ public class PregnancyServiceImpl extends BaseServiceIml<Pregnancy,PregnancyRepo
 		if (SystemM.PUBLIC_SEX_SIRE.equals(dam.getSex())){
 			return new Message(GlobalConfig.ABNORMAL,dam.getCode()+":羊只性别错误");
 		}
-		if (!SystemM.BASE_INFO_BREEDING_STATE_CROSS.equals(dam.peelBreedingState())){
-			return new Message(GlobalConfig.ABNORMAL,dam.getCode()
-					+":只有繁殖状态为已配种的羊才能测孕,该羊只的繁殖状态为:"
-						+SystemM.baseInfoBreedingRturnChinese(dam.peelBreedingState()));
+		//已有测孕结果的羊只
+		if (SystemM.BASE_INFO_BREEDING_STATE_GESTATION.equals(dam.peelBreedingState()) || SystemM.BASE_INFO_BREEDING_STATE_UNPREGNANCY.equals(dam.peelBreedingState())){
+			//查询胎次记录
+//					Parity nowParity=parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE, dam.getId());
+//					List<Pregnancy> prengList = pregnancyRepository.findByParity_idOrderByPregnancySeqDesc(nowParity.getId());
+			List<Pregnancy> prengList = pregnancyRepository.findByDam_idOrderByCtimeDesc(dam.getId());
+			if(prengList != null && prengList.size()>0){
+				return this.editUiVerify(prengList.get(0));
+			}
 		}
+//		if (!SystemM.BASE_INFO_BREEDING_STATE_CROSS.equals(dam.peelBreedingState())){
+//			return new Message(GlobalConfig.ABNORMAL,dam.getCode()
+//					+":只有繁殖状态为已配种的羊才能测孕,该羊只的繁殖状态为:"
+//						+SystemM.baseInfoBreedingRturnChinese(dam.peelBreedingState()));
+//		}
 		//如果是妊娠或者未孕 ，提示：该羊状态为妊娠或者未孕，测孕日期为2018-01-01 ，是否覆盖该条记录，继续流程，更新 
 		Parity nowParity=parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE, dam.getId());
 		if (nowParity==null){
@@ -121,6 +131,36 @@ public class PregnancyServiceImpl extends BaseServiceIml<Pregnancy,PregnancyRepo
 	@Transactional
 	@Override
 	public Pregnancy add(BaseInfo dam, Pregnancy pregnancy) {
+		
+		if (SystemM.BASE_INFO_BREEDING_STATE_GESTATION.equals(dam.peelBreedingState())
+				|| SystemM.BASE_INFO_BREEDING_STATE_UNPREGNANCY.equals(dam.peelBreedingState())) {
+//			Pregnancy editPregnancy = pregnancyRepository.findOne(pregnancy.getId());
+			Pregnancy editPregnancy = new Pregnancy();
+			List<Pregnancy> prengList = pregnancyRepository.findByDam_idOrderByCtimeDesc(dam.getId());
+			if(prengList != null && prengList.size()>0){
+				editPregnancy = prengList.get(0);
+			}
+			editPregnancy.setPredict(breedParameterRepository.findByName(SystemM.BREED_PRODUCTION).getParameter());
+			// 转圈
+			if (pregnancy.getToPaddock() != null && pregnancy.getToPaddock().getId() != null) {
+				paddockChangeService.add(pregnancy.getToPaddock(), editPregnancy.getDam().getCode(), pregnancy.getOrg(),
+						pregnancy.getRecorder());
+			} else {
+				pregnancy.setToPaddock(null);
+			}
+			pregnancy.setCtime(new Date());
+			pregnancyRepository.save(editPregnancy.editReturnThis(pregnancy));
+			Parity parity = editPregnancy.getParity();
+			Joining joining = joiningRepository.findByParity_idAndJoiningSeq(parity.getId(),
+					editPregnancy.getPregnancySeq());
+			parity.setPostCross(DateUtils.dateSubDate(joining.getJoiningDate(), pregnancy.getPregnancyDate()));
+			// 修改羊只繁殖状态
+			baseInfoService.getRepository()
+					.save(editPregnancy.getDam().setBreedingStateReutrnThis(editPregnancy.returnBreedingState()));
+			joiningRepository.save(joining.setResultReturnThis(pregnancy.getResult()));
+			
+			return editPregnancy;
+		}
 		Parity nowParity=parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE,dam.getId());
 		pregnancy.setDam(dam);
 		pregnancy.setParity(nowParity);
@@ -237,6 +277,47 @@ public class PregnancyServiceImpl extends BaseServiceIml<Pregnancy,PregnancyRepo
 		joiningRepository.save(joining.setResultReturnThis(null));
 		//删除妊娠记录
 		pregnancyRepository.delete(pregnancy);
+		return GlobalConfig.SUCCESS;
+	}
+	
+	@Override
+	public Message verify(String damCode, BaseInfo dam) {
+
+		if (SystemM.BASE_INFO_BREEDING_STATE_GESTATION.equals(dam.peelBreedingState())
+				|| SystemM.BASE_INFO_BREEDING_STATE_UNPREGNANCY.equals(dam.peelBreedingState())) {
+			// 查询胎次记录
+			Parity nowParity = parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE, dam.getId());
+			// 查询测孕记录
+			// Pregnancy pregnancy =
+			// pregnancyRepository.findByResultAndParity_id(SystemM.RESULTS_PREGNANCY,
+			// nowParity.getId());
+			List<Pregnancy> prengList = pregnancyRepository.findByDam_idOrderByCtimeDesc(dam.getId());
+			Pregnancy pregnancy = new Pregnancy();
+			if (prengList != null && prengList.size() > 0) {
+				pregnancy = prengList.get(0);
+			}
+			// 查询配种记录
+			Joining joining = joiningRepository.findByIsNewestJoiningAndParity_id(SystemM.PUBLIC_TRUE,
+					nowParity.getId());
+			return new Message(GlobalConfig.ABNORMAL,
+					dam.getCode() + ":该羊的配种时间是" + DateUtils.DateToStrMit(joining.getJoiningDate()) + ",上次测孕时间是"
+							+ DateUtils.DateToStrMit(pregnancy.getPregnancyDate()) + "，结果："
+							+ SystemM.baseInfoBreedingRturnChinese(dam.peelBreedingState()) + "。勾选将替换上次测孕结果");
+		}
+
+		// if
+		// (SystemM.BASE_INFO_BREEDING_STATE_UNPREGNANCY.equals(dam.peelBreedingState())){
+		// //查询胎次记录
+		// Parity
+		// nowParity=parityRepository.findByIsNewestParityAndDam_id(SystemM.PUBLIC_TRUE,
+		// dam.getId());
+		// //查询配种记录
+		// Joining
+		// joining=joiningRepository.findByIsNewestJoiningAndParity_id(SystemM.PUBLIC_TRUE,
+		// nowParity.getId());
+		// return new Message(GlobalConfig.ABNORMAL,dam.getCode()
+		// +":该羊的配种时间是"+DateUtils.DateToStrMit(joining.getJoiningDate())+",上次测孕结果：未孕。勾选将替换上次测孕结果");
+		// }
 		return GlobalConfig.SUCCESS;
 	}
 }

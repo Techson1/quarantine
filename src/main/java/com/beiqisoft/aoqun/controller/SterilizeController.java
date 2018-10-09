@@ -38,7 +38,7 @@ public class SterilizeController extends BaseController<Sterilize,SterilizeServi
 						paddock.setId(Long.parseLong(paddockId));
 						entity.setPaddock(paddock);
 						Sterilize entity_ = new Sterilize(entity);
-						entitys.add(entity_);
+						entitys.add(entity_); 
 					}
 				}
 				getRepository().save(entitys);

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.beiqisoft.aoqun.config.GlobalConfig;
 import com.beiqisoft.aoqun.config.Message;
+import com.beiqisoft.aoqun.util.DateUtils;
 
 @Service
 public abstract class BaseServiceIml<T,R> implements BaseService<T,R> {
@@ -152,12 +154,12 @@ public abstract class BaseServiceIml<T,R> implements BaseService<T,R> {
 		} else if (type.endsWith("Date") && val != null) {
 			if ("startDate".equals(fieldName)) {
 			System.err.println(val);
-				list.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ctime").as(Date.class), (Date) val));
+				list.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ctime"), (Date) val));
 			} else if ("endDate".equals(fieldName)) {
-				list.add(criteriaBuilder.lessThanOrEqualTo(root.get("ctime").as(Date.class), (Date) val));
+				list.add(criteriaBuilder.lessThan(root.get("ctime"), DateUtils.dateAddInteger((Date) val, 1)));
 			} else if (fieldName.endsWith(ASSIST_START)){
 				list.add(criteriaBuilder.greaterThanOrEqualTo(
-						root.get(fieldNameAnalysis(fieldName,"start")).as(Date.class),(Date) val));
+						root.get(fieldNameAnalysis(fieldName,"start")),(Date) val));
 			} else if(fieldName.endsWith(ASSIST_END)){
 				list.add(criteriaBuilder.lessThanOrEqualTo(
 						root.get(fieldNameAnalysis(fieldName,"end")).as(Date.class),(Date) val));

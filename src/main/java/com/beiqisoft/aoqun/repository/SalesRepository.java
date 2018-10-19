@@ -37,4 +37,6 @@ public interface SalesRepository extends BaseRepository<Sales>{
 
 	@Query(value="SELECT MAX(s.code) FROM t_sales s WHERE s.ctime LIKE ?1 AND s.org_id=?2",nativeQuery=true)
 	String findByDate(String year,Long OrgId);
+	
+	List<Sales> findByCustomerId(Long customerId);
 }

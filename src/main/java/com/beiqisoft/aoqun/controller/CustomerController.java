@@ -11,6 +11,7 @@ import com.beiqisoft.aoqun.base.BaseController;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.Customer;
 import com.beiqisoft.aoqun.entity.Organization;
+import com.beiqisoft.aoqun.entity.Sales;
 import com.beiqisoft.aoqun.service.CustomerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,27 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomerController extends BaseController<Customer,CustomerService> {
 	@RequestMapping(value ="list")
     public Page<Customer> list(Customer customer) throws InterruptedException{
-		return customerService.find(customer);
+//		return customerService.find(customer);
+		return page.pageAcquire(customerService.find(customer)).iteration(x -> {
+			if (x.getId()!=null){
+				List<Sales> salesList = salesService.getRepository().findByCustomerId(x.getId());
+				if(salesList !=null && salesList.size()>0){
+					Long totalPrice = 0L;
+					Long totalCount = 0L;
+					for(Sales s:salesList){
+						totalPrice += Long.parseLong(s.getTotalPrice());
+						totalCount += Long.parseLong(s.getTotalCount());
+					}
+					x.setPurchase(salesList.size()+"");
+					x.setMoney(totalPrice+"");
+					x.setNumber(totalCount+"");
+				}else{
+					x.setPurchase("0");
+					x.setMoney("0");
+					x.setNumber("0");
+				}
+			}
+		});
     }
 	@RequestMapping(value ="selectAll")
     public List<Customer> selectAll(Customer cusomer) throws InterruptedException{

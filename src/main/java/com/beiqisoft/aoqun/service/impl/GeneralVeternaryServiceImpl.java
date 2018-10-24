@@ -55,7 +55,14 @@ public class GeneralVeternaryServiceImpl extends BaseServiceIml<GeneralVeternary
 			}
 		},new PageRequest(0, size, Sort.Direction.DESC, "ctime"));
 	}
-
+	public List<GeneralVeternary> findList(GeneralVeternary generalVeternary) {
+		return generalVeternaryRepository.findAll(new Specification<GeneralVeternary>() {
+			public Predicate toPredicate(Root<GeneralVeternary> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				return query.getRestriction();
+			}
+		},new Sort(Sort.Direction.DESC,new String[] {"ctime"}));
+	}
 	public GeneralVeternaryRepository getRepository() {
 		return generalVeternaryRepository;
 	}

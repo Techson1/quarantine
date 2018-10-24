@@ -1,5 +1,7 @@
 package com.beiqisoft.aoqun.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.beiqisoft.aoqun.base.BaseService;
@@ -14,7 +16,7 @@ public interface GeneralVeternaryService extends BaseService<GeneralVeternary, G
 	 * @return
 	 */
 	Page<GeneralVeternary> find(GeneralVeternary generalVeternary);
-	
+	List<GeneralVeternary> findList(GeneralVeternary generalVeternary);
 	Page<GeneralVeternary> find(GeneralVeternary generalVeternary, int pageNum);
 
 	/**

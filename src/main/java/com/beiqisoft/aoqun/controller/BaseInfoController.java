@@ -124,7 +124,53 @@ public class BaseInfoController extends BaseController<BaseInfo,BaseInfoService>
 			x.setLooks(looksService.getRepository().findByBase_id(x.getId()));
 		});
     }
-	
+	/**
+	 * 羊只档案导出
+	 * */
+	@RequestMapping(value ="exportAll")
+	public void exportAll(HttpServletRequest request, HttpServletResponse response,BaseInfo baseInfo) throws IOException{
+		baseInfo.setFlag(SystemM.PUBLIC_FALSE);
+		baseInfo.setCtime(null);
+		baseInfo.setMoonAge(null);
+		List<BaseInfo> baseInfos = baseInfoService.findAllList(baseInfo);//baseInfoService.find(baseInfo,PAGE_SIZE*number).getContent();
+		for (BaseInfo b:baseInfos){
+			b.setBreedName(b.getBreed().getBreedName());
+			b.setDamCode(b.getDam()!=null?b.getDam().getCode():"");
+			b.setSireCode(b.getSire()!=null?b.getSire().getCode():"");
+			b.setSex(SystemM.PUBLIC_SEX_SIRE.equals(b.getSex())?"公羊":"母羊");
+			if(b.getRank()!=null&&b.getRank().getName()!=null) b.setRankName(b.getRank().getName());
+			if(b.getPaddock().getName()!=null) b.setPaddockName(b.getPaddock().getName());
+			if(b.getBreedingState()!=null) b.setBreedingState(breedingStateReturn(b.getBreedingState()));
+			if(b.getPhysiologyStatus()!=null) b.setPhyCode(phyReturn(b.getPhysiologyStatus()));
+			if(b.getGeneticLevel()!=null) b.setGeneticLevel(genetReturn(b.getGeneticLevel()));
+			if(b.getBornStatus()!=null) {
+				if(b.getBornStatus().equals("2")) {
+					b.setBornStatus("羔羊");
+				}else if(b.getBornStatus().equals("3")) {
+					b.setBornStatus("青年羊");
+				}else if(b.getBornStatus().equals(4)) {
+					b.setBornStatus("成年羊");
+				}else {
+					b.setBornStatus("未知");
+				}
+			}
+ 			if(b.getIsOutsourcing()!=null&&b.getIsOutsourcing().equals("1")) {
+				if(b.getSourceType().equals("1")) {
+					b.setSourceType("自产");
+				}
+				if(b.getSourceType().equals("2")){ 
+					b.setSourceType("外购");
+				}
+			}else {
+				b.setSourceType(b.getOrg().getBrief());
+			} 
+		}
+		String excelName="种羊档案查询数据导出";
+		ExportDate.writeExcel(excelName,response,baseInfos,
+				new String[]{"code","rfid","breedName","sex","birthDay","geneticLevel","moonAge","sireCode","damCode","bornStatus","rankName","paddockName","breedingState","phyCode","SourceType"},
+				excelName+".xls",
+				new String[]{"可视耳号","电子耳号","品种","性别","出生日期","基因等级","月龄","父号","母号","生长阶段","定级","圈舍","繁殖状态","库存状态","来源"});
+	}
 	/**
 	 * 羊只档案导出
 	 * */
@@ -133,7 +179,7 @@ public class BaseInfoController extends BaseController<BaseInfo,BaseInfoService>
 		baseInfo.setFlag(SystemM.PUBLIC_FALSE);
 		baseInfo.setCtime(null);
 		baseInfo.setMoonAge(null);
-		List<BaseInfo> baseInfos = baseInfoService.find(baseInfo,PAGE_SIZE*number).getContent();
+		List<BaseInfo> baseInfos = baseInfoService.findAllList(baseInfo);//baseInfoService.find(baseInfo,PAGE_SIZE*number).getContent();
 		for (BaseInfo b:baseInfos){
 			b.setBreedName(b.getBreed().getBreedName());
 			b.setDamCode(b.getDam()!=null?b.getDam().getCode():"");

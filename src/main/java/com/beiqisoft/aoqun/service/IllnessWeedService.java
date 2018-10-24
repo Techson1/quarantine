@@ -1,5 +1,7 @@
 package com.beiqisoft.aoqun.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.beiqisoft.aoqun.base.BaseService;
@@ -15,6 +17,12 @@ public interface IllnessWeedService extends BaseService<IllnessWeed, IllnessWeed
 	 */
 	Page<IllnessWeed> find(IllnessWeed illnessWeed);
 	
+	/**
+	 * 导出数据结果集
+	 * @param illnessWeed
+	 * @return
+	 */
+	List<IllnessWeed> findAll(IllnessWeed illnessWeed);
 	Page<IllnessWeed> find(IllnessWeed illnessWeed, int pageNum);
 
 	/**

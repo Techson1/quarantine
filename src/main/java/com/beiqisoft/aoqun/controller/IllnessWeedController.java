@@ -74,7 +74,43 @@ public class IllnessWeedController extends BaseController<IllnessWeed,IllnessWee
 				new String[]{"耳号","公羊耳号","母羊耳号","出生日期","品种","性别","淘汰月龄","淘汰日期",
 						"淘汰原因","淘汰详因","处理措施","所在圈舍"});
 	}
-	
+	/**
+	 * 导出查询结果
+	 * @param request
+	 * @param response
+	 * @param illnessWeed
+	 * @param number
+	 * @throws IOException
+	 */
+	@RequestMapping(value ="exportAll")
+	public void exportAll(HttpServletRequest request, HttpServletResponse response,IllnessWeed illnessWeed) throws IOException{
+		List<IllnessWeed> illnessWeeds= illnessWeedService.findAll(illnessWeed);
+		for (IllnessWeed i:illnessWeeds){
+			i.setCode(i.getBase().getCode());
+			i.setSireCode(i.getBase().getSire()!=null?i.getBase().getSire().getCode():"");
+			i.setDamCode(i.getBase().getDam()!=null?i.getBase().getDam().getCode():"");
+			i.setBirthDay(DateUtils.DateToStr(i.getBase().getBirthDay()));
+			i.setBreedName(i.getBase().getBreed().getBreedName());
+			i.setSex(SystemM.PUBLIC_TRUE.equals(i.getBase().getSex())?"公羊":"母羊");
+			i.setMoonAge(DateUtils.dateToAge(i.getDate(),i.getBase().getBirthDay()));
+			i.setFatherReasonName(i.getFatherReason().getName());
+			i.setReasonName(i.getReason().getName());
+			i.setPaddockName(i.getPaddock()!=null?i.getPaddock().getName():"");
+			if(i.getTreat().equals("1")) {
+				i.setTreat("售卖");
+			}else if(i.getTreat().equals("2")) {
+				i.setTreat("屠宰");
+			}else {
+				i.setTreat("无害化处理");
+			}
+		}
+		ExportDate.writeExcel("疾病淘汰查询数据导出",response,illnessWeeds,
+				new String[]{"code","sireCode","damCode","birthDay","breedName","sex","moonAge","date",
+						"fatherReasonName","reasonName","treat","paddockName"},
+				"种羊档案查询数据导出"+".xls",
+				new String[]{"耳号","公羊耳号","母羊耳号","出生日期","品种","性别","淘汰月龄","淘汰日期",
+						"淘汰原因","淘汰详因","处理措施","所在圈舍"});
+	}
 	/**
 	 * 疾病淘汰
 	 * */

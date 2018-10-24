@@ -90,8 +90,8 @@ public class ExportDate {
 			String fileName, String[] titles) throws IOException {
 		OutputStream os = response.getOutputStream();// 取得输出流
 		response.reset();// 清空输出流       
-		response.setHeader("Content-disposition", "attachment; filename="+tableName+".xls");// 设定输出文件头       
-		response.setContentType("application/msexcel");// 定义输出类型  
+		response.setHeader("Content-disposition", "attachment; filename="+new String(tableName.getBytes("utf-8"),"ISO-8859-1" )+".xls");// 设定输出文件头       
+		response.setContentType("application/msexcel;charset=UTF-8");// 定义输出类型  
 		WritableWorkbook wwb = null;
 		try {
 			wwb = Workbook.createWorkbook(os);

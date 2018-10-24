@@ -129,6 +129,16 @@ public class DateUtils {
 	     }
 	     return date;
 	 }
+	 public static Date StrToDate(String str,String frmtStr) {
+		 SimpleDateFormat format = new SimpleDateFormat(frmtStr);
+	     Date date = null;
+	     try {
+	         date = format.parse(str);
+	     } catch (ParseException e) {
+	         e.printStackTrace();
+	     }
+	     return date;
+	 }
 	 public static Date StrToDatetime(String str) {
 		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	     Date date = null;

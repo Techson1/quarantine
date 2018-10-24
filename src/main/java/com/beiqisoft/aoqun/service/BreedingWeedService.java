@@ -1,5 +1,7 @@
 package com.beiqisoft.aoqun.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.beiqisoft.aoqun.base.BaseService;
@@ -14,7 +16,12 @@ public interface BreedingWeedService extends BaseService<BreedingWeed, BreedingW
 	 * @return
 	 */
 	Page<BreedingWeed> find(BreedingWeed breedingWeed);
-	
+	/**
+	 * 导出查询结果集
+	 * @param breedingWeed
+	 * @return
+	 */
+	List<BreedingWeed> findAll(BreedingWeed breedingWeed);
 	Page<BreedingWeed> find(BreedingWeed breedingWeed, int pageNum);
 
 	/**

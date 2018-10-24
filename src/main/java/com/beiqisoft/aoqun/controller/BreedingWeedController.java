@@ -75,10 +75,43 @@ public class BreedingWeedController extends BaseController<BreedingWeed,Breeding
 				new String[]{"code","sireCode","damCode","birthDay","breedName","sex","moonAge",
 						"date","fatherReasonName","reasonName","treat","paddockName","operator"},
 				SystemM.PATH+UUID.randomUUID().toString()+".xls",
-				new String[]{"耳号","公羊耳号","母羊耳号","出生日期","品种","性别","月龄","淘汰日期","淘汰原因",
+				new String[]{"可视耳号","父号","母号","出生日期","品种","性别","淘汰月龄","淘汰日期","淘汰原因",
 						"淘汰详因","处理措施","所在圈舍","饲养员"});
 	}
-	
+	/**
+	 * 育种淘汰导出2.0
+	 * */
+	@RequestMapping(value="exportAll")
+	public void exportAll(HttpServletRequest request, HttpServletResponse response,BreedingWeed breedingWeed) throws IOException{
+		List<BreedingWeed> breedingWeeds = breedingWeedService.findAll(breedingWeed);
+		for (BreedingWeed b:breedingWeeds){
+			b.setCode(b.getBase().getCode());
+			b.setSireCode(b.getBase().getSire()!=null?b.getBase().getSire().getCode():"");
+			b.setDamCode(b.getBase().getDam()!=null?b.getBase().getDam().getCode():"");
+			b.setBirthDay(DateUtils.DateToStr(b.getBase().getBirthDay()));
+			b.setBreedName(b.getBase().getBreed().getBreedName());
+			b.setSex(SystemM.PUBLIC_SEX_SIRE.equals(b.getBase().getSex())?"公羊":"母羊");
+			b.setMoonAge(DateUtils.dateToAge(b.getDate(),b.getBase().getBirthDay()));
+			b.setReasonName(b.getReason()!=null?b.getReason().getName():"");
+			b.setFatherReasonName(b.getFatherReason()!=null?b.getFatherReason().getName():"");
+			b.setIsAudit(SystemM.PUBLIC_TRUE.equals(b.getBase().getIsAudit())?"是":"否");
+			b.setPaddockName(b.getPaddock().getName());
+			b.setOperator(b.getPaddock().getContact()==null?"":b.getPaddock().getContact().getFirstName());
+			if(b.getTreat().equals("1")) {
+				b.setTreat("售卖");
+			}else if(b.getTreat().equals("2")) {
+				b.setTreat("屠宰");
+			}else {
+				b.setTreat("无害化处理");
+			}
+		}
+		ExportDate.writeExcel("育种淘汰查询数据导出",response,breedingWeeds,
+				new String[]{"code","sireCode","damCode","birthDay","breedName","sex","moonAge",
+						"date","fatherReasonName","reasonName","treat","paddockName","operator"},
+				"种羊档案查询数据导出"+".xls",
+				new String[]{"可视耳号","父号","母号","出生日期","品种","性别","淘汰月龄","淘汰日期","淘汰原因",
+						"淘汰详因","处理措施","所在圈舍","饲养员"});
+	}
 	/**
 	 * 育种淘汰
 	 * */

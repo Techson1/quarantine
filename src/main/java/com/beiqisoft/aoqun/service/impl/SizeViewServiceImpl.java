@@ -51,7 +51,14 @@ public class SizeViewServiceImpl extends BaseServiceIml<SizeView,SizeViewReposit
 			}
 		},new PageRequest(0, size, Sort.Direction.DESC, "ctime"));
 	}
-
+	public List<SizeView> findAll(SizeView sizeView) {
+		return sizeViewRepository.findAll(new Specification<SizeView>() {
+			public Predicate toPredicate(Root<SizeView> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				return query.getRestriction();
+			}
+		},new Sort(Sort.Direction.DESC,new String[] {"ctime"}));
+	}
 	public SizeViewRepository getRepository() {
 		return sizeViewRepository;
 	}

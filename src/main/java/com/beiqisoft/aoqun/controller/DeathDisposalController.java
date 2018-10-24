@@ -79,6 +79,41 @@ public class DeathDisposalController extends BaseController<DeathDisposal,Deathd
 				new String[]{"耳号","公羊耳号","母羊耳号","出生日期","品种","性别","死亡时月龄","死亡原因",
 						"死亡详因","死亡日期","处理措施","所在圈舍","操作人"});
 	}
+	/**
+	 * 死亡登记导出
+	 * */
+	@RequestMapping(value="exportAll")
+	public void exportAll(HttpServletRequest request, HttpServletResponse response,DeathDisposal deathdisposal) throws IOException{
+		List<DeathDisposal> deathDisposals= deathdisposalService.findAll(deathdisposal);
+		for (DeathDisposal d:deathDisposals){
+			d.setCode(d.getBase().getCode());
+			d.setSireCode(d.getBase().getSire()!=null?d.getBase().getSire().getCode():"");
+			d.setDamCode(d.getBase().getDam()!=null?d.getBase().getDam().getCode():"");
+			d.setBirthDay(DateUtils.DateToStr(d.getBase().getBirthDay()));
+			d.setBreedName(d.getBase().getBreed().getBreedName());
+			d.setSex(SystemM.PUBLIC_SEX_SIRE.equals(d.getBase().getSex())?"公羊":"母羊");
+			d.setMoonAge(DateUtils.dateToAge(d.getDate(),d.getBase().getBirthDay()));
+			d.setReasonName(d.getReason()!=null?d.getReason().getName():"");
+			d.setFatherReasonName(d.getFatherReason()!=null?d.getFatherReason().getName():"");
+			if (d.getPaddock()!=null){
+				d.setPaddockName(d.getPaddock().getName());
+				d.setContactName(d.getPaddock().getContact()!=null?d.getPaddock().getContact().getFirstName():"");
+			}
+			if(d.getTreat().equals("1")) {
+				d.setTreat("售卖");
+			}else if(d.getTreat().equals("2")) {
+				d.setTreat("屠宰");
+			}else {
+				d.setTreat("无害化处理");
+			}
+		}
+		ExportDate.writeExcel("死亡登记查询数据导出",response,deathDisposals,
+				new String[]{"code","sireCode","damCode","birthDay","breedName","sex","moonAge","reasonName",
+						"fatherReasonName","date","treat","paddockName","recorder"},
+				SystemM.PATH+UUID.randomUUID().toString()+".xls",
+				new String[]{"可视耳号","父号","母号","出生日期","品种","性别","死亡时月龄","死亡详因",
+						"死亡原因","死亡日期","处理措施","所在圈舍","操作人"});
+	}
 	
 	/**
 	 * 添加校验

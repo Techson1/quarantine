@@ -19,6 +19,12 @@ public interface DeathdisposalService extends BaseService<DeathDisposal, DeathDi
 	 */
 	Page<DeathDisposal> find(DeathDisposal deathdisposal);
 	
+	/**
+	 * 获取用户对象
+	 * @param deathdisposal 查询条件
+	 * @return
+	 */
+	List<DeathDisposal> findAll(DeathDisposal deathdisposal);
 	Page<DeathDisposal> find(DeathDisposal deathdisposal, int pageNum);
 
 	/**

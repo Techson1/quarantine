@@ -55,7 +55,27 @@ public class SizeViewController extends BaseController<SizeView,SizeViewService>
 				new String[]{"耳号","品种","性别","测定日期","身高(cm)","体长(cm)","胸围","管围","阴囊围(cm)",
 						"背膘厚度(mm)	","眼肌深度(cm)","眼肌宽度(cm)"});
 	}
-	
+	/**
+	 * 体尺数据体重导出
+	 * 
+	 * @param wigth 查询条件
+	 * @throws IOException 
+	 * */
+	@RequestMapping(value ="exportALl")
+	public void exportALl(HttpServletRequest request, HttpServletResponse response,SizeView sizeView) throws IOException{
+		List<SizeView> sizeViews = sizeViewService.findAll(sizeView);
+		for (SizeView r:sizeViews){
+			r.setCode(r.getBase().getCode());
+			r.setBreedName(r.getBase().getBreed().getBreedName());
+			r.setSex(SystemM.PUBLIC_SEX_SIRE.equals(r.getBase().getSex())?"公羊":"母羊");
+		}
+		ExportDate.writeExcel("sizeView",response,sizeViews,
+				new String[]{"code","breedName","sex","date","tall","bodyLength","bust","circumFerence","testis",
+						"depth","yjsd","yjkd"},
+				SystemM.PATH+UUID.randomUUID().toString()+".xls",
+				new String[]{"耳号","品种","性别","测定日期","身高(cm)","体长(cm)","胸围","管围","阴囊围(cm)",
+						"背膘厚度(mm)	","眼肌深度(cm)","眼肌宽度(cm)"});
+	}
 	/**
 	 * 校验
 	 * */

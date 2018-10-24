@@ -46,7 +46,18 @@ public class BreedingWeedServiceImpl extends BaseServiceIml<BreedingWeed,Breedin
 			}
 		},new PageRequest(breedingWeed.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "date"));
 	}
-	
+	public List<BreedingWeed> findAll(BreedingWeed breedingWeed){
+		
+		return breedingWeedRepository.findAll(new Specification<BreedingWeed>() {
+			@Override
+			public Predicate toPredicate(Root<BreedingWeed> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				List<Predicate> list = getEntityPredicate(breedingWeed,root,criteriaBuilder);
+				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				return query.getRestriction();
+			}
+		},new Sort(Sort.Direction.DESC,new String[] {"date"}));
+	}
 	public Page<BreedingWeed> find(BreedingWeed breedingWeed, int size) {
 		return breedingWeedRepository.findAll(new Specification<BreedingWeed>() {
 			public Predicate toPredicate(Root<BreedingWeed> root, CriteriaQuery<?> query,

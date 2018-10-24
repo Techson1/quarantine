@@ -155,7 +155,36 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 			}
 		},new PageRequest(baseInfo.getPageNum(), size, Sort.Direction.DESC, "birthDay"));
 	}
+	
+	public List<BaseInfo> findAllList(BaseInfo baseInfo) {
+		return baseInfoRepository.findAll(new Specification<BaseInfo>() {
 
+			@Override
+			public Predicate toPredicate(Root<BaseInfo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+             List<Predicate> list = getEntityPredicate(baseInfo,root,criteriaBuilder);
+				
+				if(baseInfo.getStartMoonAge()!=null && !"".equals(baseInfo.getStartMoonAge())){
+					list.add(criteriaBuilder.greaterThanOrEqualTo(root.get("moonAge")
+							.as(String.class),baseInfo.getStartMoonAge()));
+				}
+				if (baseInfo.getEndMoonAge()!=null && !"".equals(baseInfo.getEndMoonAge())){
+					list.add(criteriaBuilder.lessThanOrEqualTo(root.get("moonAge")
+							.as(String.class),baseInfo.getEndMoonAge()));
+				}
+				if (baseInfo.getBreedingStateDetail()!=null && !"".equals(baseInfo.getBreedingStateDetail())){
+					list.add(criteriaBuilder.equal(root.get("breedingState"), baseInfo.getBreedingStateDetail()));
+				}
+				if (baseInfo.getBreedingState()!=null && !"".equals(baseInfo.getBreedingState())){
+					//System.out.println("查询");
+					list.add(criteriaBuilder.equal(criteriaBuilder
+							.substring(root.get("breedingState"), 1, 2),baseInfo.getBreedingState()));
+				}
+				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				return query.getRestriction();
+			}
+			
+		},new Sort(Sort.Direction.DESC,new String[] {"birthDay"}));
+	}
 	@Override
 	public Page<BaseInfo> lambFind(BaseInfo baseInfo) {
 		return baseInfoRepository.findAll((root,query,criteriaBuilder)->{

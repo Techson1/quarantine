@@ -55,11 +55,33 @@ public class IllnessWeedServiceImpl extends BaseServiceIml<IllnessWeed,IllnessWe
 		return illnessWeedRepository.findAll(new Specification<IllnessWeed>() {
 			public Predicate toPredicate(Root<IllnessWeed> root, CriteriaQuery<?> query,
 					CriteriaBuilder criteriaBuilder) {
+	           List<Predicate> list = getEntityPredicate(illnessWeed,root,criteriaBuilder);
+				
+				if (illnessWeed.getPaddock()!=null){
+					list.add(criteriaBuilder.equal(root.join("paddock", JoinType.INNER).get("id"), illnessWeed.getPaddock().getId()));
+				}
+				
+				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
 		},new PageRequest(0, size, Sort.Direction.DESC, "ctime"));
 	}
 
+	@Override
+	public List<IllnessWeed> findAll(IllnessWeed illnessWeed) {
+		 
+		return illnessWeedRepository.findAll(new Specification<IllnessWeed>() {
+
+			@Override
+			public Predicate toPredicate(Root<IllnessWeed> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				 
+				return query.getRestriction();
+			}
+			
+			
+		}, new Sort(Sort.Direction.DESC,new String[] {"ctime"}));
+		
+	}
 	public IllnessWeedRepository getRepository() {
 		return illnessWeedRepository;
 	}
@@ -117,4 +139,5 @@ public class IllnessWeedServiceImpl extends BaseServiceIml<IllnessWeed,IllnessWe
 		}
 		return GlobalConfig.SUCCESS;
 	}
+
 }

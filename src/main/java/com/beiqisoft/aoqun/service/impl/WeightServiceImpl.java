@@ -112,7 +112,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 	 * @return
 	 */
 	private Message checkWeight(BaseInfo base,Date dateWeight,Long orgId,String type) {
-		
+		//DateUtils.StrToDate(dateWeight);
 		if (!base.getOrg().getId().equals(orgId)){
 			return GlobalConfig.setAbnormal("不是本分厂的羊,不能添加");
 		}
@@ -207,16 +207,22 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							
 							 
 							Cell cell3 = row.getCell(3);
+							Date weightDate = null;
 							if(0 == cell3.getCellType()) {
 								if(HSSFDateUtil.isCellDateFormatted(cell3)) {//如果是日期格式
-									Date date = cell3.getDateCellValue();
-									String time=DateUtils.getStrDate(date, "yyyy-MM-dd");
+									weightDate = cell3.getDateCellValue();
+									String time=DateUtils.getStrDate(weightDate, "yyyy-MM-dd");
 									logger.info("cell3..."+cell3);
 									vo.setTime(time);
 								}else {
+									weightDate=cell3.getDateCellValue();
 									String time=DateUtils.getStrDate(cell3.getDateCellValue(), "yyyy-MM-dd");
 									vo.setTime(time);
 								}
+							}else {
+								weightDate=DateUtils.StrToDate(cell3.getStringCellValue(),"yyyy/MM/dd");
+								logger.info("cell3..."+cell3);
+								vo.setTime(cell3.getStringCellValue());
 							}
 							
 							//devInfo.setModel(getValue(cell3));
@@ -242,18 +248,20 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							if (base==null){
 								vo.setMessage(GlobalConfig.setAbnormal(String.valueOf(cell1)+":该羊不存在"));
 							}else {
-							    Message msg=checkWeight(base, cell3.getDateCellValue(), orgId, String.valueOf(weightType));
+							    Message msg=checkWeight(base,weightDate, orgId, String.valueOf(weightType));
 								vo.setMessage(msg);
 							}
 							vo.setDocNum(String.valueOf(rowNum));
 							listVo.add(vo);
 						} catch (Exception e) {
-							e.printStackTrace(); 
+							vo.setMessage(GlobalConfig.setAbnormal("数据格式不正确"));
+							listVo.add(vo);
+							logger.error("读取数据遇到异常..."+e.toString());
 						}
 		            }
 		        }
 		    } catch (Exception e) {
-		        e.printStackTrace();
+		    	logger.error("读取数据遇到异常..."+e.toString());
 		    }
 			return listVo;
 	}

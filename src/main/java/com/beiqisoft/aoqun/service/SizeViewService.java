@@ -1,5 +1,7 @@
 package com.beiqisoft.aoqun.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.beiqisoft.aoqun.base.BaseService;
@@ -16,7 +18,7 @@ public interface SizeViewService extends BaseService<SizeView, SizeViewRepositor
 	Page<SizeView> find(SizeView sizeView);
 	
 	Page<SizeView> find(SizeView sizeView, int pageNum);
-	
+	List<SizeView> findAll(SizeView sizeView);
 	/**
 	 * 体尺添加
 	 * */

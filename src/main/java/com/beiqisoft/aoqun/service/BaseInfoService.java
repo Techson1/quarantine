@@ -21,7 +21,7 @@ public interface BaseInfoService extends BaseService<BaseInfo, BaseInfoRepositor
 	Page<BaseInfo> find(BaseInfo baseInfo);
 	
 	Page<BaseInfo> find(BaseInfo baseInfo, int pageNum);
-	
+	public List<BaseInfo> findAllList(BaseInfo baseInfo);
 	/**
 	 * 羔羊查询
 	 * */

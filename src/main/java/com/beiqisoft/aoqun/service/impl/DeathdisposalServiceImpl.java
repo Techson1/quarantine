@@ -50,7 +50,16 @@ public class DeathdisposalServiceImpl extends BaseServiceIml<DeathDisposal,Death
 			}
 		},new PageRequest(deathdisposal.getPageNum(), GlobalConfig.PAGE_SIZE, Sort.Direction.DESC, "date"));
 	}
-	
+	public List<DeathDisposal> findAll(final DeathDisposal deathdisposal) {
+		return deathdisposalRepository.findAll(new Specification<DeathDisposal>() {
+			public Predicate toPredicate(Root<DeathDisposal> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				List<Predicate> list = getEntityPredicate(deathdisposal,root,criteriaBuilder);
+				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
+				return query.getRestriction();
+			}
+		},new Sort(Sort.Direction.DESC,new String[] {"date"}));
+	}
 	public Page<DeathDisposal> find(DeathDisposal deathdisposal, int size) {
 		return deathdisposalRepository.findAll(new Specification<DeathDisposal>() {
 			public Predicate toPredicate(Root<DeathDisposal> root, CriteriaQuery<?> query,

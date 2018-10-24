@@ -63,7 +63,23 @@ public class GeneralVeternaryController extends BaseController<GeneralVeternary,
 				SystemM.PATH+UUID.randomUUID().toString()+".xls",
 				new String[]{"耳号","品种","性别","月龄","诊疗日期","疾病原因","疾病详因","处理措施","治疗结果","所在饲舍","操作人"});
 	}
-	
+	/**
+	 * 疾病诊疗导出
+	 * */
+	@RequestMapping(value ="exportAll")
+	public void exportAll(HttpServletRequest request, HttpServletResponse response,GeneralVeternary generalVeternary) throws IOException{
+		List<GeneralVeternary> generalVeternarys = generalVeternaryService.findList(generalVeternary);
+		for (GeneralVeternary g:generalVeternarys){
+			g.setCode(g.getBase().getCode());
+			g.setBreedName(g.getBase().getBreed().getBreedName());
+			g.setSex(SystemM.PUBLIC_SEX_SIRE.equals(g.getBase().getSex())?"公羊":"母羊");
+			g.setMoonAge(DateUtils.dateToAge(g.getDate(),g.getBase().getBirthDay()));
+		}
+		ExportDate.writeExcel("疾病诊疗查询结果导出",response,generalVeternarys,
+				new String[]{"code","breedName","sex","moonAge","date","fatherReasonName","resultName","remark","result","paddockName","recorder"},
+				SystemM.PATH+UUID.randomUUID().toString()+".xls",
+				new String[]{"耳号","品种","性别","月龄","诊疗日期","疾病原因","疾病详因","处理措施","治疗结果","所在饲舍","操作人"});
+	}
 	/**
 	 * 添加校验
 	 * */

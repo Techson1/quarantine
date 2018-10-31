@@ -33,11 +33,11 @@ public class CustomerController extends BaseController<Customer,CustomerService>
 			if (x.getId()!=null){
 				List<Sales> salesList = salesService.getRepository().findByCustomerId(x.getId());
 				if(salesList !=null && salesList.size()>0){
-					Long totalPrice = 0L;
-					Long totalCount = 0L;
+					Float totalPrice = 0.0f;
+					Float totalCount =  0.0f;
 					for(Sales s:salesList){
-						totalPrice += Long.parseLong(s.getTotalPrice());
-						totalCount += Long.parseLong(s.getTotalCount());
+						totalPrice += Float.parseFloat(s.getTotalPrice());
+						totalCount += Float.parseFloat(s.getTotalCount());
 					}
 					x.setPurchase(salesList.size()+"");
 					x.setMoney(totalPrice+"");

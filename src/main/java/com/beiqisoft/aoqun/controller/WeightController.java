@@ -103,7 +103,7 @@ public class WeightController extends BaseController<Weight,WeightService> {
 		    } 
 			HttpSession session=request.getSession();
 			
-		    String filePath = request.getSession().getServletContext().getRealPath("upload/");
+		    String filePath = request.getSession().getServletContext().getRealPath("upload/")+UUID.randomUUID()+"/";
 		    String path = filePath+fileName;
 	        try {
 				File targetFile = new File(filePath);
@@ -117,7 +117,8 @@ public class WeightController extends BaseController<Weight,WeightService> {
 				//addFileTask(path,Integer.valueOf(code_type),Integer.valueOf(weight_type));
 				mesList=wigthService.weightExcel(path, Integer.valueOf(code_type),Integer.valueOf(weight_type),orgId);
 	        } catch (Exception e) {
-	            e.printStackTrace();
+	            //e.printStackTrace();
+	        	logger.error("导入失败...."+e.getMessage());
 	            WeightVo vo=new WeightVo();
 	        	vo.setCode(null);
 	        	vo.setMessage(new Message(500, "上传失败"+e.getMessage()));

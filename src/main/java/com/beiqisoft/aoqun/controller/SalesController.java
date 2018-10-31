@@ -120,6 +120,21 @@ public class SalesController extends BaseController<Sales,SalesService> {
 		log.info("startcheckOneSheep.....");
 		SalesDatail datail=salesDatailService.getRepository().findOne(Long.valueOf(sheepid));
 		datail.setCheckStatus(ckStatus);//设置选中
+		if("1".equals(datail.getSales().getCheckFlag())) {//表示已经复核，不能取消羊只选中状态
+			if("1".equals(ckStatus)) {
+				datail.getItem().setPhysiologyStatus(Long.valueOf("10"));
+			}else {
+				return new Message(10001,"该销售单已经复核，不能取消！");
+			}
+		}else {
+			
+			if("1".equals(ckStatus)) {
+				datail.getItem().setPhysiologyStatus(Long.valueOf("10"));
+			}else {
+				datail.getItem().setPhysiologyStatus(Long.valueOf("9"));
+			}
+		}
+		
 		salesDatailService.getRepository().save(datail);
 		log.info("end checkOneSheep.....");
   		return SUCCESS;

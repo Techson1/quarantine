@@ -151,10 +151,10 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 	public List<WeightVo> weightExcel(String filepath,int code_type,int weightType,Long orgId) throws Exception {
 		logger.info("fileName:"+filepath);
 			List<WeightVo> listVo=new ArrayList<WeightVo>();
-			 
+			InputStream is=null;
 			try {
 				File file = new File(filepath);
-		        InputStream is = new FileInputStream(file);
+		        is = new FileInputStream(file);
 		        String fileName = file.getName();
 		        Workbook hssfWorkbook = null;
 		        if (fileName.endsWith("xlsx")){
@@ -261,8 +261,16 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 		            }
 		        }
 		    } catch (Exception e) {
+		    	WeightVo vo=new WeightVo();
+		    	vo.setMessage(GlobalConfig.setAbnormal("解析excle遇到异常"));
+				listVo.add(vo);
+				logger.error("读取数据遇到异常..."+e.toString());
 		    	logger.error("读取数据遇到异常..."+e.toString());
-		    }
+		    }finally {
+				if(null!=is) {
+					is.close();
+				}
+			}
 			return listVo;
 	}
 		private static String getValue(Cell hssfCell) {

@@ -20,6 +20,13 @@ public interface BaseInfoRepository extends BaseRepository<BaseInfo>{
 	 * @return BaseInfo
 	 * */
 	BaseInfo findByCode(String code);
+	/**
+	 * 根据可视耳号和场区区分
+	 * @param code
+	 * @param orgid
+	 * @return
+	 */
+	BaseInfo findByCodeAndOrgId(String code,Long orgid);
 	
 	/**
 	 * 查询耳标

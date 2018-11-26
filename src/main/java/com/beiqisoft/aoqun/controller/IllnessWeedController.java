@@ -1,6 +1,7 @@
 package com.beiqisoft.aoqun.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.beiqisoft.aoqun.base.BaseController;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.config.SystemM;
+import com.beiqisoft.aoqun.entity.Allot;
 import com.beiqisoft.aoqun.entity.BaseInfo;
 import com.beiqisoft.aoqun.entity.Breed;
 import com.beiqisoft.aoqun.entity.Contact;
@@ -154,7 +156,16 @@ public class IllnessWeedController extends BaseController<IllnessWeed,IllnessWee
 	public Message delete(@PathVariable Long id){
 		return illnessWeedService.delete(id);
 	}
-	
+	@RequestMapping(value = "one/{id}")
+	public IllnessWeed findOne(@PathVariable Long id) {
+		IllnessWeed alo=getRepository().findOne(id);
+		if(null!=alo) {
+			Date da=alo.getDate();
+			String datStr=DateUtils.getStrDate(da, "yyyy-MM-dd HH:MM:SS").substring(0, 10);
+			alo.setDate(DateUtils.StrToDate(datStr, "yyyy-MM-dd"));
+		}
+		return alo;
+	}
 	/**
 	 * 疾病修改
 	 * */

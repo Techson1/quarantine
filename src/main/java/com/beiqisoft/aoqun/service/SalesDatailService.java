@@ -23,6 +23,13 @@ public interface SalesDatailService extends BaseService<SalesDatail, SalesDatail
 	 * 添加
 	 * */
 	void add(SalesDatail salesDatail);
+     
+	/**
+	 * 羊只明细添加2.o
+	 * @param earTag
+	 * @param salesDatail
+	 */
+	void  addDetail(String earTag,SalesDatail salesDatail);
 
 	/**
 	 * 查询
@@ -33,6 +40,15 @@ public interface SalesDatailService extends BaseService<SalesDatail, SalesDatail
 	 * 校验
 	 * */
 	Message addVerify(SalesDatail salesDatail, String earTag);
+	
+	/**
+	 * 校验2.0 增加场区校验
+	 * @param salesDatail
+	 * @param earTag
+	 * @param orgid
+	 * @return
+	 */
+	Message addVerifyOrgid(SalesDatail salesDatail, String earTag,String orgid);
 
 	/**
 	 * 删除

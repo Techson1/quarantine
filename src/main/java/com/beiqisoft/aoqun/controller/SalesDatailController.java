@@ -48,8 +48,8 @@ public class SalesDatailController extends BaseController<SalesDatail,SalesDatai
 	 * */
 	@RequestMapping(value="add")
 	public Message add(SalesDatail salesDatail,String earTag){
-		salesDatail.setCode(earTag);
-		salesDatailService.add(salesDatail);
+		salesDatail.setId(null);
+		salesDatailService.addDetail(earTag,salesDatail);
 		return SUCCESS;
 	}
 	
@@ -69,7 +69,14 @@ public class SalesDatailController extends BaseController<SalesDatail,SalesDatai
 	public Message addVerify(SalesDatail salesDatail,String earTag){
 		return salesDatailService.addVerify(salesDatail,earTag);
 	}
-	
+	/**
+	 * 校验2.0
+	 * 增加场区限制
+	 * */
+	@RequestMapping(value="addVerifyOrgid")
+	public Message addVerifyOrgid(SalesDatail salesDatail,String earTag,String orgid){
+		return salesDatailService.addVerifyOrgid(salesDatail,earTag,orgid);
+	}
 	/**
 	 * 销售明细
 	 * */

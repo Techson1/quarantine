@@ -21,6 +21,7 @@ import com.beiqisoft.aoqun.entity.Breed;
 import com.beiqisoft.aoqun.entity.Contact;
 import com.beiqisoft.aoqun.entity.DeathDisposal;
 import com.beiqisoft.aoqun.entity.DeathDisposalReason;
+import com.beiqisoft.aoqun.entity.IllnessWeed;
 import com.beiqisoft.aoqun.entity.Paddock;
 import com.beiqisoft.aoqun.service.DeathdisposalService;
 import com.beiqisoft.aoqun.util.DateUtils;
@@ -157,7 +158,16 @@ public class DeathDisposalController extends BaseController<DeathDisposal,Deathd
 	public Message delete(@PathVariable Long id){
 		return deathdisposalService.delete(id);
 	}
-	
+	@RequestMapping(value = "one/{id}")
+	public DeathDisposal findOne(@PathVariable Long id) {
+		DeathDisposal alo=getRepository().findOne(id);
+		if(null!=alo) {
+			Date da=alo.getDate();
+			String datStr=DateUtils.getStrDate(da, "yyyy-MM-dd HH:MM:SS").substring(0, 10);
+			alo.setDate(DateUtils.StrToDate(datStr, "yyyy-MM-dd"));
+		}
+		return alo;
+	}
 	/**
 	 * 死亡修改
 	 * */

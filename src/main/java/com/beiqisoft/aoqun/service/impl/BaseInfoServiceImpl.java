@@ -6,14 +6,13 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +29,6 @@ import com.beiqisoft.aoqun.entity.BaseInfo;
 import com.beiqisoft.aoqun.entity.Breed;
 import com.beiqisoft.aoqun.entity.CodeRegister;
 import com.beiqisoft.aoqun.entity.Looks;
-import com.beiqisoft.aoqun.entity.OnHandMonth;
 import com.beiqisoft.aoqun.entity.Weight;
 import com.beiqisoft.aoqun.repository.BaseInfoRepository;
 import com.beiqisoft.aoqun.repository.BreedParameterRepository;
@@ -336,7 +334,20 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 		return baseInfoRepository.findByCodeOrRfid(code,code);
 	}
 	public BaseInfo findByCodeOrRfidAndOrgId(String code,Long orgId) {
-		return baseInfoRepository.findByCodeOrRfidAndOrgId(code,code,orgId);
+		return baseInfoRepository.findOne(new Specification<BaseInfo>() {
+			public Predicate toPredicate(Root<BaseInfo> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				 
+				Path<String> codPath = root.get("code");  
+				Path<String> rfidPath = root.get("rfid"); 
+				Path<String> orgPath = root.get("org"); 
+				
+				query.where(criteriaBuilder.equal(orgPath.get("id"), orgId),criteriaBuilder.or(criteriaBuilder.equal(codPath, code),criteriaBuilder.equal(rfidPath, code)));
+				return query.getRestriction();
+			}
+			
+		});
+		//return baseInfoRepository.findByCodeAndOrgId(code,orgId);
 	}
 
 	@Override

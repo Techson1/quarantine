@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.beiqisoft.aoqun.base.BaseServiceIml;
 import com.beiqisoft.aoqun.config.GlobalConfig;
@@ -70,16 +71,29 @@ public class SalesDatailServiceImpl extends BaseServiceIml<SalesDatail,SalesData
 
 	@Override
 	public void add(SalesDatail salesDatail) {
-		salesDatail.setItem(baseInfoService.findByCodeOrRfid(salesDatail.getCode()));
+		BaseInfo item=baseInfoService.findByCodeOrRfid(salesDatail.getCode());
 		//修改羊只信息
-		salesDatail.getItem().setPhysiologyStatus(MyUtils.strToLong(SystemM.STAY_MARKET));
+	    item.setPhysiologyStatus(MyUtils.strToLong(SystemM.STAY_MARKET));
+		salesDatail.setItem(item);
 		baseInfoService.getRepository().save(salesDatail.getItem());
 		//保存
 		salesDatailRepository.save(salesDatail);
 		//改变销售数量及金额
 		salesRepository.save(salesRepository.findOne(salesDatail.getSales().getId()).add(salesDatail));
 	}
-
+	public void addDetail(String earTag,SalesDatail salesDatail) {
+		
+		BaseInfo item=baseInfoService.findByCodeOrRfid(earTag);
+		//修改羊只信息
+	    item.setPhysiologyStatus(MyUtils.strToLong(SystemM.STAY_MARKET));
+	    salesDatail.setCode(earTag);
+		salesDatail.setItem(item);
+		baseInfoService.getRepository().save(salesDatail.getItem());
+		//保存
+		salesDatailRepository.save(salesDatail);
+		//改变销售数量及金额
+		salesRepository.save(salesRepository.findOne(salesDatail.getSales().getId()).add(salesDatail));
+	}
 	@Override
 	public List<SalesDatail> findList(SalesDatail salesDatail) {
 		return salesDatailRepository.findAll((root,query,criteriaBuilder)->{
@@ -154,5 +168,22 @@ public class SalesDatailServiceImpl extends BaseServiceIml<SalesDatail,SalesData
 						return x.getItem();
 					}).collect(Collectors.toList()));
 		
+	}
+
+	@Override
+	public Message addVerifyOrgid(SalesDatail salesDatail, String earTag, String orgid) {
+		BaseInfo base= baseInfoService.findByCodeOrRfidAndOrgId(earTag, Long.valueOf(orgid));
+		if (base==null) return GlobalConfig.setAbnormal("该羊不存在");
+		
+		
+		//判断是否定级
+		if (base.getRank()==null) return GlobalConfig.setAbnormal("该羊没有添加定级");
+		if (base.getRank().getPrice()==null) return GlobalConfig.setAbnormal("该羊的定级不是销售级,不能销售");
+		
+		//判断是否销售
+		if (salesDatailRepository.findByItem_id(base.getId())!=null) 
+			return GlobalConfig.setAbnormal("该羊已在销售列表中"); 
+		//判断羊只是否在库
+		return baseInfoService.flagVerify(base);
 	}
 }

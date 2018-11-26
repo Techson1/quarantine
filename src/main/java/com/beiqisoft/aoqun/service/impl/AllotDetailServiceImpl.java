@@ -83,6 +83,9 @@ public class AllotDetailServiceImpl extends BaseServiceIml<AllotDetail,AllotDeta
 			return GlobalConfig.setAbnormal("该羊只不存在,不能添加");
 		}
 		*/
+		if(null==baseInfoService.findByCodeOrRfidAndOrgId(code, orgId)) {
+			return GlobalConfig.setAbnormal("该羊只不存在,不能添加");
+		}
 		/************增加组织机构和库存状态校验********************/ 
 		message =baseInfoService.flagVerifyAndPhysiologyStatus(code, orgId, 1L);
 		

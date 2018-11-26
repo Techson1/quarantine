@@ -1,6 +1,7 @@
 package com.beiqisoft.aoqun.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,6 +64,16 @@ public class GeneralVeternaryController extends BaseController<GeneralVeternary,
 				SystemM.PATH+UUID.randomUUID().toString()+".xls",
 				new String[]{"耳号","品种","性别","月龄","诊疗日期","疾病原因","疾病详因","处理措施","治疗结果","所在饲舍","操作人"});
 	}
+	@RequestMapping(value = "one/{id}")
+	public GeneralVeternary findOne(@PathVariable Long id) {
+		GeneralVeternary alo= getRepository().findOne(id);
+		if(null!=alo) {
+			Date da=alo.getDate();
+			String datStr=DateUtils.getStrDate(da, "yyyy-MM-dd HH:MM:SS").substring(0, 10);
+			alo.setDate(DateUtils.StrToDate(datStr, "yyyy-MM-dd"));
+		}
+		return getRepository().findOne(id);
+	}
 	/**
 	 * 疾病诊疗导出
 	 * */
@@ -93,6 +104,7 @@ public class GeneralVeternaryController extends BaseController<GeneralVeternary,
 	 * */
 	@RequestMapping(value="add")
 	public Message add(GeneralVeternary generalVeternary,String earTag){
+		generalVeternary.setId(null);
 		 generalVeternaryService.add(generalVeternary,earTag);
 		 return SUCCESS;
 	}

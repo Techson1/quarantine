@@ -1,5 +1,6 @@
 package com.beiqisoft.aoqun.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -12,10 +13,10 @@ import com.beiqisoft.aoqun.config.GlobalConfig;
 import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.config.SystemM;
 import com.beiqisoft.aoqun.entity.Allot;
-import com.beiqisoft.aoqun.entity.BaseInfo;
 import com.beiqisoft.aoqun.entity.Organization;
 import com.beiqisoft.aoqun.entity.Paddock;
 import com.beiqisoft.aoqun.service.AllotService;
+import com.beiqisoft.aoqun.util.DateUtils;
 import com.beiqisoft.aoqun.util.json.JSON;
 @RestController
 @RequestMapping(value = "allot")
@@ -24,7 +25,16 @@ public class AllotController extends BaseController<Allot,AllotService> {
     public Page<Allot> list(Allot allot) throws InterruptedException{
 		return allotService.find(allot);
     }
-	
+	@RequestMapping(value = "one/{id}")
+	public Allot findOne(@PathVariable Long id) {
+		Allot alo=getRepository().findOne(id);
+		if(null!=alo) {
+			Date da=alo.getAllotDate();
+			String datStr=DateUtils.getStrDate(da, "yyyy-MM-dd HH:MM:SS").substring(0, 10);
+			alo.setAllotDate(DateUtils.StrToDate(datStr, "yyyy-MM-dd"));
+		}
+		return alo;
+	}
 	/**
 	 * 修改校验
 	 * */

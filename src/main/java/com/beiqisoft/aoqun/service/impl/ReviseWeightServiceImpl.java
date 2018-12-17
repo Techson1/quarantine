@@ -70,6 +70,9 @@ public class ReviseWeightServiceImpl extends BaseServiceIml<ReviseWeight,ReviseW
 		ReviseWeight revise = reviseWeightRepository.findByBase_id(base.getId());
 		if(revise==null){
 			revise = new ReviseWeight();
+		}else {
+			reviseWeightRepository.delete(revise);
+			revise = new ReviseWeight();
 		}
 		revise.setBase(base);
 		test(revise,base);

@@ -311,7 +311,7 @@ public class PaddockChangeServiceImpl extends BaseServiceIml<PaddockChange,Paddo
 			  if(null==ob[7]) {
 				  vo.setCtime(null);
 			  }else { 
-				 vo.setCtime(ob[7].toString().substring(0,16));
+				 vo.setCtime(ob[7].toString().substring(0,19));
 			  }
 			  vo.setFromPaddockId(String.valueOf(ob[8]));
 			  vo.setToPaddockId(String.valueOf(ob[9]));

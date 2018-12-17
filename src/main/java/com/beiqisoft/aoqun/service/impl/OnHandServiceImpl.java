@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.beiqisoft.aoqun.base.BaseServiceIml;
 import com.beiqisoft.aoqun.config.GlobalConfig;
+import com.beiqisoft.aoqun.config.Message;
 import com.beiqisoft.aoqun.entity.OnHand;
 import com.beiqisoft.aoqun.repository.OnHandRepository;
 import com.beiqisoft.aoqun.service.OnHandService;
@@ -48,6 +49,12 @@ public class OnHandServiceImpl extends BaseServiceIml<OnHand,OnHandRepository> i
 
 	public OnHandRepository getRepository() {
 		return onHandRepository;
+	}
+
+	@Override
+	public List<Integer> findReportIndex(Long orgId, String yearAndmonth) {
+		List<Integer> result=onHandRepository.findReportIndex(orgId, yearAndmonth);
+		return result;
 	}
 
 }

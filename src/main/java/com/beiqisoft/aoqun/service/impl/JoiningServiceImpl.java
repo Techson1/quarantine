@@ -370,20 +370,29 @@ public class JoiningServiceImpl extends BaseServiceIml<Joining,JoiningRepository
 		baseInfoRepository.save(dam);
 		//TODO 胚胎移植不计算繁殖日期
 	}
-	
+	/**
+	 * 1、判断羊的状态,是否是已配状态（是，下一步）BaseInfo peelBreedingState =11
+	 * 2、joining.getIsNewestJoining() ==1 可以删除，否则不能删除
+	 * 3、joining.getParity().getIsNewestParity() ==1 可删除
+	 */
 	public Message delVerify(Long id) {
 		Joining joining=joiningRepository.findOne(id);
 		if (!SystemM.PUBLIC_TRUE.equals(joining.getIsNewestJoining())){
-			return new Message(GlobalConfig.ABNORMAL,"不能删除1");
+			return new Message(GlobalConfig.ABNORMAL,"只有最新的配种才能删除");
 		}
-		List<Pregnancy> pregnancies= pregnancyRepository.findByParity_idOrderByPregnancySeqDesc(
+		BaseInfo baseinfo=joining.getDam();
+		//判断羊的状态,是否是已配状态
+		if(!SystemM.BASE_INFO_BREEDING_STATE_CROSS.equals(baseinfo.peelBreedingState())) {
+			return new Message(GlobalConfig.ABNORMAL,"只有已配状态才能删除");
+		}
+		/*List<Pregnancy> pregnancies= pregnancyRepository.findByParity_idOrderByPregnancySeqDesc(
 				joining.getParity().getId());
 		String number=!pregnancies.isEmpty()?pregnancies.get(0).getPregnancySeq():"0";
 		if(((int) joining.getJoiningSeq().compareTo(number))<=0){
 			return new Message(GlobalConfig.ABNORMAL,"不能删除2");
-		}
+		}*/
 		if (!SystemM.PUBLIC_TRUE.equals(joining.getParity().getIsNewestParity())){
-			return new Message(GlobalConfig.ABNORMAL,"不能删除3");
+			return new Message(GlobalConfig.ABNORMAL,"只有最新的胎次才能删除");
 		}
 		return del(id);
 	}

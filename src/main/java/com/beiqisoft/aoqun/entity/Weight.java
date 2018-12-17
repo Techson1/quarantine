@@ -48,8 +48,8 @@ public class Weight extends BaseEntity{
 	private String weights;
 	/**体重日期*/
 	@Temporal(TemporalType.TIMESTAMP)
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss:SSS")
-	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
 	private Date weighthDate;
 	/**日龄*/
 	private Integer dayAge;

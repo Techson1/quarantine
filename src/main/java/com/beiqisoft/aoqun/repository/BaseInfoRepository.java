@@ -1,11 +1,13 @@
 package com.beiqisoft.aoqun.repository;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.beiqisoft.aoqun.base.BaseRepository;
 import com.beiqisoft.aoqun.entity.BaseInfo;
@@ -104,6 +106,80 @@ public interface BaseInfoRepository extends BaseRepository<BaseInfo>{
 	 * */
 	@Query(value="SELECT COUNT(*) FROM BaseInfo b WHERE b.dam.id=?1 AND b.physiologyStatus=?2")
 	Integer findByDamNumber(Long damId,Long physiologyStatus);
+	
+	@Query(value="SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and CAST(t.moon_age AS SIGNED)<=2 and 0<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and breed_id=:breddId and CAST(t.moon_age AS SIGNED)<=11 and 3<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and 23>=CAST(t.moon_age AS SIGNED) and 12<=CAST(t.moon_age AS SIGNED)\r\n" + 
+			" union all \r\n"+
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and 35>=CAST(t.moon_age AS SIGNED) and 24<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and 47>=CAST(t.moon_age AS SIGNED) and 36<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and 59>=CAST(t.moon_age AS SIGNED) and 48<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId   and 60<=CAST(t.moon_age AS SIGNED)\r\n",nativeQuery=true)
+    List<BigInteger> getPopAnalysis(@Param("orgId")Long orgId,@Param("breddId")Long breddId);
+	
+	@Query(value="SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1 and t.flag='0' and  org_id=:orgId  and CAST(t.moon_age AS SIGNED)<=2 and 0<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId  and CAST(t.moon_age AS SIGNED)<=11 and 3<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId and 23>=CAST(t.moon_age AS SIGNED) and 12<=CAST(t.moon_age AS SIGNED)\r\n" + 
+			" union all \r\n" +
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId and 35>=CAST(t.moon_age AS SIGNED) and 24<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId and 47>=CAST(t.moon_age AS SIGNED) and 36<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n" +
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId and 59>=CAST(t.moon_age AS SIGNED) and 48<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1  and t.flag='0' and org_id=:orgId   and 60<=CAST(t.moon_age AS SIGNED)\r\n",nativeQuery=true)
+    List<BigInteger> getPopAnalysis2(@Param("orgId") Long orgId);
+	
+	@Query(value="SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and CAST(t.moon_age AS SIGNED)<=2 and 0<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and breed_id=:breddId and t.Sex=:sex and CAST(t.moon_age AS SIGNED)<=11 and 3<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and 23>=CAST(t.moon_age AS SIGNED) and 12<=CAST(t.moon_age AS SIGNED)\r\n" + 
+			" union all \r\n" +
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and 35>=CAST(t.moon_age AS SIGNED) and 24<=CAST(t.moon_age AS SIGNED)\r\n" +
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and 47>=CAST(t.moon_age AS SIGNED) and 36<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and 59>=CAST(t.moon_age AS SIGNED) and 48<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId and breed_id=:breddId and t.Sex=:sex and   60<=CAST(t.moon_age AS SIGNED)\r\n",nativeQuery=true)
+    List<BigInteger> getPopAnalysis3(@Param("orgId")Long orgId,@Param("breddId")Long breddId,@Param("sex")String sex);
+	
+	@Query(value="SELECT count(1) as count FROM aoquntest.t_base_info t where t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex and CAST(t.moon_age AS SIGNED)<=2 and 0<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId   and t.sex=:sex and CAST(t.moon_age AS SIGNED)<=11 and 3<=CAST(t.moon_age AS SIGNED) \r\n" + 
+			" union all \r\n" + 
+			"SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex and 23>=CAST(t.moon_age AS SIGNED) and 12<=CAST(t.moon_age AS SIGNED)\r\n" + 
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex and 35>=CAST(t.moon_age AS SIGNED) and 24<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex and 47>=CAST(t.moon_age AS SIGNED) and 36<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex and 59>=CAST(t.moon_age AS SIGNED) and 48<=CAST(t.moon_age AS SIGNED)\r\n"+
+			" union all \r\n"+
+			" SELECT count(1) as count FROM aoquntest.t_base_info t where  t.physiology_status=1 and t.flag='0' and org_id=:orgId  and t.sex=:sex  and 60<=CAST(t.moon_age AS SIGNED)\r\n",nativeQuery=true)
+    List<BigInteger> getPopAnalysis4(@Param("orgId")Long orgId,@Param("sex")String sex);
+	
+	/***************开始定级统计报表sql********************************/
+	
+	@Query(value="SELECT count(1),info.rank_id,t.rank FROM aoquntest.t_base_info info left join t_rank_test t on info.rank_id=t.id  where info.physiology_status=1 and info.flag='0' and info.org_id=:orgId and info.breed_id=:breddId group by t.rank",nativeQuery=true)
+	List<Object[]> getPopLevAnalysis(@Param("orgId")Long orgId,@Param("breddId")Long breddId);
+	
+	@Query(value="SELECT count(1),info.rank_id,t.rank FROM aoquntest.t_base_info info left join t_rank_test t on info.rank_id=t.id  where info.physiology_status=1 and info.flag='0' and info.org_id=:orgId and info.sex=:sex group by t.rank",nativeQuery=true)
+	List<Object[]> getPopLevAnalysis3(@Param("orgId")Long orgId,@Param("sex")String sex);
+	
+	@Query(value="SELECT count(1),info.rank_id,t.rank FROM aoquntest.t_base_info info left join t_rank_test t on info.rank_id=t.id  where info.physiology_status=1 and info.flag='0' and info.org_id=:orgId and info.breed_id=:breddId and info.sex=:sex group by t.rank",nativeQuery=true)
+	List<Object[]> getPopLevAnalysis4(@Param("orgId")Long orgId,@Param("breddId")Long breddId,@Param("sex")String sex);
+	
+	@Query(value="SELECT count(1),info.rank_id,t.rank FROM aoquntest.t_base_info info left join t_rank_test t on info.rank_id=t.id  where info.physiology_status=1 and info.flag='0' and info.org_id=:orgId group by t.rank",nativeQuery=true)
+	List<Object[]> getPopLevAnalysis2(@Param("orgId")Long orgId);
 
 	/**根据栋栏查询全部羊只*/
 	List<BaseInfo> findByPaddock_id(Long fromPaddockId);

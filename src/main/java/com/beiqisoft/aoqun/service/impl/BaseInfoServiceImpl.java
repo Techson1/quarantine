@@ -1,5 +1,6 @@
 package com.beiqisoft.aoqun.service.impl;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,7 @@ import com.beiqisoft.aoqun.entity.BaseInfo;
 import com.beiqisoft.aoqun.entity.Breed;
 import com.beiqisoft.aoqun.entity.CodeRegister;
 import com.beiqisoft.aoqun.entity.Looks;
+import com.beiqisoft.aoqun.entity.Organization;
 import com.beiqisoft.aoqun.entity.Weight;
 import com.beiqisoft.aoqun.repository.BaseInfoRepository;
 import com.beiqisoft.aoqun.repository.BreedParameterRepository;
@@ -177,11 +180,49 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 					list.add(criteriaBuilder.equal(criteriaBuilder
 							.substring(root.get("breedingState"), 1, 2),baseInfo.getBreedingState()));
 				}
+				if (baseInfo.getOrg()!=null && !"".equals(baseInfo.getOrg().getId())){
+					//System.out.println("查询");
+					Path<String> orgPath = root.get("org"); 
+					list.add(criteriaBuilder.equal(orgPath.get("id"), baseInfo.getOrg().getId()));
+				}
 				query.where(criteriaBuilder.and(list.toArray(new Predicate[list.size()])));
 				return query.getRestriction();
 			}
 			
 		},new Sort(Sort.Direction.DESC,new String[] {"birthDay"}));
+	}
+	/**
+	 * 种群分析
+	 * @param baseInfo
+	 * @return
+	 */
+	public List<BigInteger> getReportResult(BaseInfo baseInfo) {
+		if((null!=baseInfo.getBreed() && null!=baseInfo.getBreed().getId()) && StringUtils.isBlank(baseInfo.getSex())) {
+			return baseInfoRepository.getPopAnalysis(baseInfo.getOrg().getId(),baseInfo.getBreed().getId());
+		}else if(StringUtils.isNotBlank(baseInfo.getSex()) && (null==baseInfo.getBreed() || null==baseInfo.getBreed().getId())){
+			return baseInfoRepository.getPopAnalysis4(baseInfo.getOrg().getId(), baseInfo.getSex());
+		}else if(StringUtils.isNotBlank(baseInfo.getSex()) && (null!=baseInfo.getBreed() && null!=baseInfo.getBreed().getId())){
+			
+			return baseInfoRepository.getPopAnalysis3(baseInfo.getOrg().getId(), baseInfo.getBreed().getId(), baseInfo.getSex());
+		}else{
+			return baseInfoRepository.getPopAnalysis2(baseInfo.getOrg().getId());
+		}
+	}
+	/**
+	 * 定级分析
+	 */
+	public List<Object[]> getReportResultLev(BaseInfo baseInfo) {
+		if((null!=baseInfo.getBreed() && null!=baseInfo.getBreed().getId()) && StringUtils.isBlank(baseInfo.getSex())) {
+			
+			return baseInfoRepository.getPopLevAnalysis(baseInfo.getOrg().getId(),baseInfo.getBreed().getId());
+		}else if(StringUtils.isNotBlank(baseInfo.getSex()) && (null==baseInfo.getBreed() || null==baseInfo.getBreed().getId())){
+			return baseInfoRepository.getPopLevAnalysis3(baseInfo.getOrg().getId(), baseInfo.getSex());
+		}else if(StringUtils.isNotBlank(baseInfo.getSex()) && (null!=baseInfo.getBreed() &&  null==baseInfo.getBreed().getId())) {
+			return baseInfoRepository.getPopLevAnalysis4(baseInfo.getOrg().getId(), baseInfo.getBreed().getId(), baseInfo.getSex());
+		}else{
+			return baseInfoRepository.getPopLevAnalysis2(baseInfo.getOrg().getId());
+		}
+		
 	}
 	@Override
 	public Page<BaseInfo> lambFind(BaseInfo baseInfo) {
@@ -653,10 +694,19 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 	 *   增加组织机构和 库存状态校验
 	 */
 	public Message flagVerifyAndPhysiologyStatus(String earTag, Long orgId, Long physiologyStatus) {
-		 
-		 BaseInfo baseInfo= baseInfoRepository.findByCodeOrRfidAndOrgIdAndPhysiologyStatus(earTag,earTag,orgId,physiologyStatus);
+		BaseInfo baseInfo=baseInfoRepository.findByCodeOrRfid(earTag, earTag);
+		if (baseInfo==null){
+			return GlobalConfig.setAbnormal(earTag+":该羊不存在");
+		}
+		 //BaseInfo baseInfo= baseInfoRepository.findByCodeOrRfidAndOrgIdAndPhysiologyStatus(earTag,earTag,orgId,physiologyStatus);
 			if (baseInfo==null){
 				return GlobalConfig.setAbnormal(earTag+":该羊不存在");
+			}
+			if(orgId!=baseInfo.getOrg().getId()) {
+				return GlobalConfig.setAbnormal(earTag+":不是本厂的羊不能添加");
+			}
+			if(!"1".equals(baseInfo.getPhysiologyStatus())) {
+				return GlobalConfig.setAbnormal(earTag+":该羊不在库");
 			}
 			if (SystemM.PUBLIC_TRUE.equals(baseInfo.getFlag())){
 				return GlobalConfig.setIsPass(earTag+":该羊是归档羊");
@@ -664,4 +714,5 @@ public class BaseInfoServiceImpl extends BaseServiceIml<BaseInfo,BaseInfoReposit
 			
 			return GlobalConfig.SUCCESS;
 	}
+	
 }

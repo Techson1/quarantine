@@ -73,7 +73,7 @@ public class ReportFormsController extends BaseController<Breed,BreedService>{
 			+ "joiningSql,bornTimes,aliveCount,deadCount,badCount,number,survival,"
 			+ "closedTyep,startDate,closedDate")
 	@RequestMapping(value="parityStatistics")
-	public Map<String,Object> parityStatistics(Date startDate,Date endDate,Long orgId,Integer pageNum){
+	public Map<String,Object> parityStatistics(Date startDate,Date endDate,Long orgId,Integer pageNum,String closedTyep){
 		Map<String,Object> map = new HashMap<>();
 		parityT t = new parityT();
 		List<Parity> list = parityService.getRepository()

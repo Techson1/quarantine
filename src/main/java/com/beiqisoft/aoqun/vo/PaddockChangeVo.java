@@ -41,7 +41,7 @@ public class PaddockChangeVo implements Serializable{
 	private Date cDate;
 	//更新时间
 	@Temporal(TemporalType.TIMESTAMP)
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss:SSS")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 	private String ctime;
 	

@@ -137,6 +137,7 @@ public class PvgController extends BaseController<Pvg, UserService> {
 		Pvg p310 = new Pvg("count/monthcount","羊只存栏月报表","",p3);
 		Pvg p311 = new Pvg("count/damBreedStateRep","母羊繁殖日报表","",p3);
 		Pvg p312 = new Pvg("house/deathlist","诊疗死淘报表","",p3);
+		Pvg p313 = new Pvg("count/popAnalysis","种群分析","",p3);
 		//Pvg p39 = new Pvg("count/Classification", "分级存栏报告", "",p3);
 		Pvg p401 = new Pvg("house/ranklist","月龄定级存栏","",p3);
 		Pvg p402 = new Pvg(" house/breedlist","繁殖状态存栏表","",p3);
@@ -264,7 +265,7 @@ public class PvgController extends BaseController<Pvg, UserService> {
 		Pvg papp30 = new Pvg("#", "出库复核");
 		Pvg papp31 = new Pvg("#", "群组");
 		
-		pvgRepository.save(returnList(p0,p1,p19,p10,p11,p12,p13,p14,p1a,p17,p15,p16,p1b,p18,p3,p30,p31,p32,p34,p35,p37,p38,p39,p310,p311,p312,p401,p3a,
+		pvgRepository.save(returnList(p0,p1,p19,p10,p11,p12,p13,p14,p1a,p17,p15,p16,p1b,p18,p3,p30,p31,p32,p34,p35,p37,p38,p39,p310,p311,p312,p313,p401,p3a,
 				p4,p40,p41,p42,p43,p5,p50,p51,p510,p511,p52,p53,p54,p55,p6,p60,p61,p621,p63,p630,p631,p64,p65,p66,p67,p68,p69,p6a,
 				p71,p73,p8,p80,p81,p82,p85,p83,p84,p9,p90,p91,p92,p93,p94,pa,pa0,pa00,pa01,pb,pb0,pb1,pb2,pb3,pb4,pc,pc0,pc1,pc2,pc3,
 				pd,pd0,pd1,pd2,pd3,pd5,pd4,pe,pe1,pf,pf0,pf1,pf2,pf4,pf30,pf31,pf32,pf33,pf34,pf35,pf36,pf37,pf38,pg,ph,papp1,

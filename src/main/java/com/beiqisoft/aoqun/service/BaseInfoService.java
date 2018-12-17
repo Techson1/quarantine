@@ -1,5 +1,6 @@
 package com.beiqisoft.aoqun.service;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -180,6 +181,19 @@ public interface BaseInfoService extends BaseService<BaseInfo, BaseInfoRepositor
 
 	List<BaseInfo> find2(BaseInfo base);
 
+	/**
+	 * 种群分析
+	 * @param baseInfo
+	 * @return
+	 */
+	public List<BigInteger> getReportResult(BaseInfo baseInfo);
+	
+	/**
+	 * 定级分析
+	 * @param baseInfo
+	 * @return
+	 */
+	public List<Object[]> getReportResultLev(BaseInfo baseInfo);
 	//Integer testFirstNum(Long id, String sex, Date startDate);
 
 }

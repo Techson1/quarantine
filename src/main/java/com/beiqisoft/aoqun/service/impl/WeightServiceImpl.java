@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -152,6 +153,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 		logger.info("fileName:"+filepath);
 			List<WeightVo> listVo=new ArrayList<WeightVo>();
 			InputStream is=null;
+			
 			try {
 				File file = new File(filepath);
 		        is = new FileInputStream(file);
@@ -168,6 +170,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 		            if (hssfSheet == null) {
 		                continue;
 		            }
+		            int i=0;
 		            // 循环行Row
 		            for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
 		                Row row = hssfSheet.getRow(rowNum);
@@ -181,11 +184,11 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							Cell cell0 = row.getCell(0);
 							//String devuid = CommonUtil.transformIMEI(getValue(cell0));
 							////devInfo.setDevUid(devuid);
-							logger.info("cell0..."+cell0);
+							 
 							
 							Cell cell1 = row.getCell(1);
 							////devInfo.setSn(getValue(cell1));
-							logger.info("cell1..."+cell1);
+							 
 							if(code_type==1) {//可视耳号
 								 vo.setCode(String.valueOf(cell1));
 								 base = baseInfoService.findByCodeOrRfid(String.valueOf(cell1));
@@ -195,8 +198,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							}
 							Cell cell2 = row.getCell(2);
 							//devInfo.setBrand(getValue(cell2));
-							logger.info("cell2..."+cell2);
-							
+							 
 							if(code_type==2) {//电子耳号
 								vo.setRfid(String.valueOf(cell2));
 							    base = baseInfoService.findByCodeOrRfid(String.valueOf(cell2));
@@ -212,7 +214,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 								if(HSSFDateUtil.isCellDateFormatted(cell3)) {//如果是日期格式
 									weightDate = cell3.getDateCellValue();
 									String time=DateUtils.getStrDate(weightDate, "yyyy-MM-dd");
-									logger.info("cell3..."+cell3);
+									 
 									vo.setTime(time);
 								}else {
 									weightDate=cell3.getDateCellValue();
@@ -221,7 +223,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 								}
 							}else {
 								weightDate=DateUtils.StrToDate(cell3.getStringCellValue(),"yyyy/MM/dd");
-								logger.info("cell3..."+cell3);
+								 
 								vo.setTime(cell3.getStringCellValue());
 							}
 							
@@ -231,7 +233,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							Cell cell4 = row.getCell(4);
 							String olstate = getValue(cell4);
 							//devInfo.setSdkVer((int)Double.parseDouble(olstate));
-							logger.info("cell4..."+olstate);
+							 
 							vo.setType(String.valueOf(weightType));
 							if(SystemM.WEIGHT_TYPE_WEANING.equals(String.valueOf(weightType))) {//如果是断奶重，1
 								vo.setWeight(Float.valueOf(olstate));
@@ -240,7 +242,7 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 							Cell cell5 = row.getCell(5);
 							String mothWeight = getValue(cell5);
 							//devInfo.setSdkVer((int)Double.parseDouble(olstate));
-							logger.info("mothWeight..."+mothWeight);
+							 
 							if(SystemM.WEIGHT_TYPE_NORMAL.equals(String.valueOf(weightType))) {//普通中2
 								vo.setWeight(Float.valueOf(mothWeight));
 							}
@@ -252,11 +254,18 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 								vo.setMessage(msg);
 							}
 							vo.setDocNum(String.valueOf(rowNum));
+							
+							if(rowNum>1) {
+								WeightVo preVo=getCountResult(listVo,vo);
+								if(null!=preVo) {
+									vo.setMessage(GlobalConfig.setAbnormal("第"+preVo.getDocNum()+"和"+vo.getDocNum()+"数据重复了"));
+								}
+							} 
 							listVo.add(vo);
 						} catch (Exception e) {
 							vo.setMessage(GlobalConfig.setAbnormal("数据格式不正确"));
 							listVo.add(vo);
-							logger.error("读取数据遇到异常..."+e.toString());
+							logger.error("读取数据"+rowNum+"遇到异常..."+e.toString());
 						}
 		            }
 		        }
@@ -264,14 +273,50 @@ public class WeightServiceImpl extends BaseServiceIml<Weight,WeightRepository> i
 		    	WeightVo vo=new WeightVo();
 		    	vo.setMessage(GlobalConfig.setAbnormal("解析excle遇到异常"));
 				listVo.add(vo);
-				logger.error("读取数据遇到异常..."+e.toString());
-		    	logger.error("读取数据遇到异常..."+e.toString());
+				logger.error("解析excle遇到异常..."+e.toString());
 		    }finally {
 				if(null!=is) {
 					is.close();
 				}
 			}
 			return listVo;
+	}
+	/**
+	 * 判断之前是否已经存在了
+	 * @param list
+	 * @param vo
+	 * @return
+	 */
+	private WeightVo getCountResult(List<WeightVo> list,WeightVo vo) {
+		int j=0;
+		for(int i=0;i<list.size();i++) {
+			boolean falg=false;
+			boolean falg2=false;
+			boolean falg3=false;
+			if(StringUtils.isNotEmpty(list.get(i).getCode())) {
+				if(list.get(i).getCode().equals(vo.getCode())) {
+					falg=true;
+				}
+			}
+			if(StringUtils.isNotEmpty(list.get(i).getRfid())) {
+				if(list.get(i).getRfid().equals(vo.getRfid())) {
+					falg2=true;
+				}
+			}
+			if(list.get(i).getTime().equals(vo.getTime())) {//判断日期是否重复
+				falg3=true;
+			}
+			if((falg ||falg2)&&falg3) {
+				 j=i;
+				break;
+			}
+		}
+		if(j>0) {
+			return list.get(j);
+		}else {
+			return null;
+		}
+		
 	}
 		private static String getValue(Cell hssfCell) {
 			if(hssfCell!=null) {

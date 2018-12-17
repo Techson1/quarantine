@@ -23,4 +23,6 @@ public class OnHandController extends BaseController<OnHand,OnHandService> {
 		onHand.setEndDate(DateUtils.dateAddInteger(DateUtils.StrToDate(date), 1));
 		return onHandService.find(onHand);
     }
+	
+ 
 }
